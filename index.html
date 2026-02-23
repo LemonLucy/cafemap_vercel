@@ -1039,7 +1039,7 @@
             }
         }
         
-        async function loadIndicators(cafe, idx) {
+        async function loadIndicators(cafe, idx, retryCount = 0) {
             try {
                 // localStorage 캐시 확인 (버전 포함)
                 const CACHE_VERSION = 'v18';
@@ -1064,6 +1064,11 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ name: cafe.name, address: cafe.address })
                     });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    
                     data = await response.json();
                     
                     // localStorage에 캐시 저장
@@ -1115,6 +1120,12 @@
                 }
             } catch (err) {
                 console.log('지표 로드 실패:', cafe.name, err);
+                
+                // 재시도 로직 (최대 3번)
+                if (retryCount < 3) {
+                    console.log(`재시도 ${retryCount + 1}/3:`, cafe.name);
+                    setTimeout(() => loadIndicators(cafe, idx, retryCount + 1), 2000 * (retryCount + 1));
+                }
             }
         }
         
