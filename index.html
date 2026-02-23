@@ -7,6 +7,15 @@
     <meta name="description" content="네이버 블로그 분석 기반 카공 최적화 카페 검색 서비스">
     <meta name="theme-color" content="#4CAF50">
     
+    <!-- OG Tags for Link Sharing -->
+    <meta property="og:title" content="CoffeeMap - 카공 최적화 카페 찾기">
+    <meta property="og:description" content="네이버 블로그 분석 기반 카공 최적화 카페 검색 서비스">
+    <meta property="og:image" content="https://cagongmap.vercel.app/cagong.png">
+    <meta property="og:url" content="https://cagongmap.vercel.app">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://cagongmap.vercel.app/cagong.png">
+    
     <!-- PWA -->
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/icon.svg">
@@ -23,6 +32,46 @@
             overflow: hidden;
             position: fixed;
             font-family: sans-serif;
+        }
+        
+        /* 로딩 화면 */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease-out;
+        }
+        
+        #loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        #loading-screen img {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        #loading-screen p {
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
         }
         
         #map { 
@@ -384,6 +433,12 @@
     </style>
 </head>
 <body>
+    <!-- 로딩 화면 -->
+    <div id="loading-screen">
+        <img src="/cagong.png" alt="CoffeeMap Logo">
+        <p>카공 최적화 카페를 찾는 중...</p>
+    </div>
+
     <!-- 구글맵 스타일 검색바 -->
     <div class="search-container">
         <div class="search-bar">
@@ -599,6 +654,11 @@
             
             kakao.maps.event.addListener(map, 'idle', searchCafes);
             searchCafes();
+            
+            // 로딩 화면 숨기기
+            setTimeout(() => {
+                document.getElementById('loading-screen').classList.add('hidden');
+            }, 1000);
         }
         
         function searchCafes() {
