@@ -47,3 +47,4 @@ const CONFIG = {
 - 시작: `bash START_SERVERS.sh`
 - 중지: `pkill -f app_server.py`
 - 로그: `tail -f server.log`
+# CafeMap
