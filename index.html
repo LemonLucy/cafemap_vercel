@@ -41,7 +41,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #000;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -421,7 +421,7 @@
 <body>
     <!-- 로딩 화면 -->
     <div id="loading-screen">
-        <img src="/cagong2.png" alt="CoffeeMap">
+        <img src="/cagong3.png" alt="CoffeeMap">
     </div>
 
     <!-- 구글맵 스타일 검색바 -->
@@ -640,10 +640,10 @@
             kakao.maps.event.addListener(map, 'idle', searchCafes);
             searchCafes();
             
-            // 로딩 화면 숨기기 (3초 후)
+            // 로딩 화면 숨기기 (2초 후)
             setTimeout(() => {
                 document.getElementById('loading-screen').classList.add('hidden');
-            }, 3000);
+            }, 2000);
         }
         
         function searchCafes() {
