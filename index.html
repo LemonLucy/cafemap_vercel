@@ -513,14 +513,14 @@
             });
         }
 
-        // Service Worker 등록
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(reg => console.log('Service Worker 등록 성공:', reg.scope))
-                    .catch(err => console.log('Service Worker 등록 실패:', err));
-            });
-        }
+        // Service Worker 비활성화 (디버깅용)
+        // if ('serviceWorker' in navigator) {
+        //     window.addEventListener('load', () => {
+        //         navigator.serviceWorker.register('/service-worker.js')
+        //             .then(reg => console.log('Service Worker 등록 성공:', reg.scope))
+        //             .catch(err => console.log('Service Worker 등록 실패:', err));
+        //     });
+        // }
         
         window.addEventListener('load', function() {
             console.log('페이지 로드됨');
