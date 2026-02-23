@@ -421,7 +421,7 @@
 <body>
     <!-- 로딩 화면 -->
     <div id="loading-screen">
-        <img src="/cagong.png" alt="CoffeeMap">
+        <img src="/cagong2.png" alt="CoffeeMap">
     </div>
 
     <!-- 구글맵 스타일 검색바 -->
@@ -640,10 +640,10 @@
             kakao.maps.event.addListener(map, 'idle', searchCafes);
             searchCafes();
             
-            // 로딩 화면 숨기기
+            // 로딩 화면 숨기기 (3초 후)
             setTimeout(() => {
                 document.getElementById('loading-screen').classList.add('hidden');
-            }, 1000);
+            }, 3000);
         }
         
         function searchCafes() {
