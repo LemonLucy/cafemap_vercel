@@ -516,7 +516,8 @@ class Handler(SimpleHTTPRequestHandler):
         return SimpleHTTPRequestHandler.do_GET(self)
 
 if __name__ == '__main__':
-    print("🚀 Venue app running at http://localhost:5000")
+    port = int(os.getenv('PORT', 5000))
+    print(f"🚀 Venue app running at http://localhost:{port}")
     print("📊 Database: venue.db")
-    print("🔄 Refresh data: http://localhost:5000/api/refresh")
-    HTTPServer(('', 5000), Handler).serve_forever()
+    print(f"🔄 Refresh data: http://localhost:{port}/api/refresh")
+    HTTPServer(('0.0.0.0', port), Handler).serve_forever()
