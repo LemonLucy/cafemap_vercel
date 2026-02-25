@@ -965,6 +965,16 @@
                 html += '</div></div>';
             }
             
+            // 카페 이미지 갤러리 (Object Storage)
+            if (data.images && data.images.length > 0) {
+                html += '<div style="margin-top:20px;"><h3 style="font-size:14px;margin-bottom:10px;">📷 카페 사진 (' + data.images.length + ')</h3>';
+                html += '<div style="display:flex;gap:8px;overflow-x:auto;padding:4px 0;">';
+                data.images.forEach(function(imgUrl) {
+                    html += '<img src="' + imgUrl + '" style="height:120px;border-radius:8px;cursor:pointer;flex-shrink:0;object-fit:cover;" onclick="window.open(\'' + imgUrl + '\', \'_blank\')">';
+                });
+                html += '</div></div>';
+            }
+            
             // 블로그 리뷰
             if (data.blogItems && data.blogItems.length > 0) {
                 html += '<div style="margin-top:20px;"><h3 style="font-size:14px;margin-bottom:10px;">📝 블로그 리뷰 (' + data.blogItems.length + ')</h3>';
