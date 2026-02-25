@@ -1107,7 +1107,7 @@
                 // 캐시가 없거나 만료되면 API 호출
                 if (!data) {
                     console.log('API 호출:', cafe.name);
-                    const response = await fetch('http://168.107.25.110/api/blog-search', {
+                    const response = await fetch('/api/blog-search', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ name: cafe.name, address: cafe.address })
