@@ -674,7 +674,7 @@
         
         // 페이지 로드 시 구버전 캐시 삭제
         (function() {
-            const CACHE_VERSION = 'v18';
+            const CACHE_VERSION = 'v19';
             const keys = [];
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
@@ -1149,7 +1149,7 @@
         async function loadIndicators(cafe, idx, retryCount = 0) {
             try {
                 // localStorage 캐시 확인 (버전 포함)
-                const CACHE_VERSION = 'v18';
+                const CACHE_VERSION = 'v19';  // 이미지 추가로 버전 업
                 const cacheKey = `cafe_${CACHE_VERSION}_${cafe.name}_${cafe.address}`;
                 const cached = localStorage.getItem(cacheKey);
                 
