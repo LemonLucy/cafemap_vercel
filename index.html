@@ -1018,10 +1018,18 @@
             if (data.images && data.images.length > 0) {
                 html += '<div style="margin-top:20px;"><h3 style="font-size:14px;margin-bottom:10px;">📷 카페 사진 (' + data.images.length + ')</h3>';
                 html += '<div style="display:flex;gap:8px;overflow-x:auto;padding:4px 0;">';
-                data.images.forEach(function(imgUrl) {
-                    html += '<img src="' + imgUrl + '" style="height:120px;border-radius:8px;cursor:pointer;flex-shrink:0;object-fit:cover;" onclick="window.open(\'' + imgUrl + '\', \'_blank\')">';
+                data.images.forEach(function(imgUrl, idx) {
+                    const blogUrl = data.blogItems && data.blogItems[idx] ? data.blogItems[idx].url : '#';
+                    html += '<div style="position:relative;flex-shrink:0;">' +
+                        '<a href="' + blogUrl + '" target="_blank">' +
+                        '<img src="' + imgUrl + '" style="height:120px;border-radius:8px;cursor:pointer;object-fit:cover;display:block;">' +
+                        '</a>' +
+                        '<div style="position:absolute;bottom:4px;right:4px;font-size:9px;background:rgba(0,0,0,0.6);color:#fff;padding:2px 4px;border-radius:3px;">출처: 블로그</div>' +
+                        '</div>';
                 });
-                html += '</div></div>';
+                html += '</div>';
+                html += '<div style="font-size:10px;color:#999;margin-top:8px;">이미지 클릭 시 원본 블로그로 이동 | <a href="mailto:report@cagongmap.com" style="color:#999;text-decoration:underline;">신고/삭제 요청</a></div>';
+                html += '</div>';
             }
             
             // 블로그 리뷰
