@@ -1,6 +1,6 @@
 {
-  "name": "CoffeeMap - 카공 최적화 카페 찾기",
-  "short_name": "CoffeeMap",
+  "name": "카공맵 - 작업하기 좋은 카페 찾기",
+  "short_name": "카공맵",
   "description": "네이버 블로그 분석 기반 카공 최적화 카페 검색 서비스",
   "start_url": "/",
   "display": "standalone",
