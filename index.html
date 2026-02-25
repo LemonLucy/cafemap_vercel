@@ -614,12 +614,25 @@
             });
         }
 
-        // Service Worker 강제 업데이트
+        // Service Worker 강제 업데이트 및 캐시 삭제
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(registrations => {
                 registrations.forEach(reg => reg.unregister());
             });
         }
+        
+        // 모든 localStorage 캐시 강제 삭제
+        (function() {
+            const keys = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('cafe_')) {
+                    keys.push(key);
+                }
+            }
+            keys.forEach(key => localStorage.removeItem(key));
+            console.log(`전체 캐시 ${keys.length}개 삭제`);
+        })();
         
         window.addEventListener('load', function() {
             console.log('페이지 로드됨');
