@@ -454,6 +454,175 @@
         .marker-name.hidden {
             display: none;
         }
+        
+        /* PWA 설치 배너 */
+        #pwaInstallBanner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 16px 20px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+            z-index: 9999;
+            display: none;
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        
+        #pwaInstallBanner .banner-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        #pwaInstallBanner .banner-text {
+            flex: 1;
+        }
+        
+        #pwaInstallBanner .banner-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        #pwaInstallBanner .banner-desc {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        
+        #pwaInstallBanner .banner-buttons {
+            display: flex;
+            gap: 10px;
+            margin-left: 15px;
+        }
+        
+        #pwaInstallBanner button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        #pwaInstallBanner .install-btn {
+            background: white;
+            color: #4CAF50;
+        }
+        
+        #pwaInstallBanner .install-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        #pwaInstallBanner .close-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        /* iOS 설치 가이드 모달 */
+        #iosInstallModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        #iosInstallModal .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        #iosInstallModal .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #333;
+        }
+        
+        #iosInstallModal .modal-steps {
+            text-align: left;
+            margin: 20px 0;
+            line-height: 1.8;
+            color: #666;
+        }
+        
+        #iosInstallModal .modal-step {
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        #iosInstallModal .step-number {
+            background: #4CAF50;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        #iosInstallModal .modal-icon {
+            font-size: 40px;
+            margin: 10px 0;
+        }
+        
+        #iosInstallModal .modal-close {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+        
+        @media (max-width: 768px) {
+            #pwaInstallBanner {
+                padding: 12px 16px;
+            }
+            
+            #pwaInstallBanner .banner-content {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            #pwaInstallBanner .banner-buttons {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            #pwaInstallBanner button {
+                flex: 1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -498,6 +667,43 @@
         </svg>
     </button>
     
+    <!-- PWA 설치 배너 -->
+    <div id="pwaInstallBanner">
+        <div class="banner-content">
+            <div class="banner-text">
+                <div class="banner-title">📱 앱으로 설치하기</div>
+                <div class="banner-desc">홈 화면에 추가하고 더 빠르게 이용하세요</div>
+            </div>
+            <div class="banner-buttons">
+                <button class="install-btn" onclick="handlePWAInstall()">설치</button>
+                <button class="close-btn" onclick="closePWABanner()">닫기</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- iOS 설치 가이드 모달 -->
+    <div id="iosInstallModal" onclick="closeIOSModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-title">앱 설치 방법 (iPhone)</div>
+            <div class="modal-icon">📲</div>
+            <div class="modal-steps">
+                <div class="modal-step">
+                    <div class="step-number">1</div>
+                    <div>하단의 <strong>공유</strong> 버튼을 누르세요</div>
+                </div>
+                <div class="modal-step">
+                    <div class="step-number">2</div>
+                    <div><strong>홈 화면에 추가</strong>를 선택하세요</div>
+                </div>
+                <div class="modal-step">
+                    <div class="step-number">3</div>
+                    <div>우측 상단 <strong>추가</strong>를 누르세요</div>
+                </div>
+            </div>
+            <button class="modal-close" onclick="closeIOSModal()">확인</button>
+        </div>
+    </div>
+    
     <style>
         #currentLocationBtn:hover {
             background: #f5f5f5 !important;
@@ -516,6 +722,11 @@
     <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=1b39ab278b34720c916eff1fe31ea422&libraries=services"></script>
     <script>
         console.log('=== 스크립트 시작 ===');
+        
+        // API Base URL 설정
+        const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://168.107.25.110'
+            : '';
         
         let map, allCafes = [], markers = [], activeMarkerIdx = null;
         let currentSort = 'score-high';
@@ -1179,7 +1390,7 @@
                 // 캐시가 없거나 만료되면 API 호출
                 if (!data) {
                     console.log('API 호출:', cafe.name);
-                    const response = await fetch('/api/blog-search', {
+                    const response = await fetch(`${API_BASE_URL}/api/blog-search`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ name: cafe.name, address: cafe.address })
@@ -1286,6 +1497,74 @@
                     '</div>';
             }).join('');
         }
+        
+        // PWA 설치 관련 코드
+        let deferredPrompt;
+        const pwaInstallBanner = document.getElementById('pwaInstallBanner');
+        const iosInstallModal = document.getElementById('iosInstallModal');
+        
+        // 이미 설치되었거나 배너를 닫은 경우 체크
+        const isPWAInstalled = window.matchMedia('(display-mode: standalone)').matches || 
+                               window.navigator.standalone === true;
+        const bannerDismissed = localStorage.getItem('pwaBannerDismissed');
+        
+        // BeforeInstallPrompt 이벤트 캐치 (Android)
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // 배너를 닫지 않았고 설치되지 않았으면 3초 후 배너 표시
+            if (!isPWAInstalled && !bannerDismissed) {
+                setTimeout(() => {
+                    pwaInstallBanner.style.display = 'block';
+                }, 3000);
+            }
+        });
+        
+        // iOS 감지 및 배너 표시
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        if (isIOS && !isPWAInstalled && !bannerDismissed) {
+            setTimeout(() => {
+                pwaInstallBanner.style.display = 'block';
+            }, 3000);
+        }
+        
+        // 설치 버튼 클릭
+        function handlePWAInstall() {
+            if (isIOS) {
+                // iOS는 가이드 모달 표시
+                iosInstallModal.style.display = 'flex';
+                pwaInstallBanner.style.display = 'none';
+            } else if (deferredPrompt) {
+                // Android는 설치 프롬프트 표시
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('PWA 설치 완료');
+                    }
+                    deferredPrompt = null;
+                    pwaInstallBanner.style.display = 'none';
+                });
+            }
+        }
+        
+        // 배너 닫기
+        function closePWABanner() {
+            pwaInstallBanner.style.display = 'none';
+            localStorage.setItem('pwaBannerDismissed', 'true');
+        }
+        
+        // iOS 모달 닫기
+        function closeIOSModal() {
+            iosInstallModal.style.display = 'none';
+        }
+        
+        // 설치 완료 감지
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA 설치 완료');
+            pwaInstallBanner.style.display = 'none';
+            localStorage.setItem('pwaBannerDismissed', 'true');
+        });
     </script>
 </body>
 </html>
