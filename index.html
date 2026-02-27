@@ -1551,7 +1551,7 @@
         // 배너 닫기
         function closePWABanner() {
             pwaInstallBanner.style.display = 'none';
-            localStorage.setItem('pwaBannerDismissed', 'true');
+            // localStorage 저장 제거 - 다음에도 배너 표시
         }
         
         // iOS 모달 닫기
@@ -1563,6 +1563,7 @@
         window.addEventListener('appinstalled', () => {
             console.log('PWA 설치 완료');
             pwaInstallBanner.style.display = 'none';
+            // 설치 완료 시에만 localStorage 저장
             localStorage.setItem('pwaBannerDismissed', 'true');
         });
     </script>
