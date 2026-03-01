@@ -2030,8 +2030,10 @@
                 return;
             }
             
-            // 모달 닫기
-            document.querySelectorAll('div[style*="position:fixed"][style*="z-index:2000"]').forEach(el => el.remove());
+            // 모달 닫기 (bottomNav는 제외)
+            document.querySelectorAll('div[style*="position:fixed"][style*="z-index:2000"]').forEach(el => {
+                if (el.id !== 'bottomNav') el.remove();
+            });
             
             // 포스팅 페이지로 이동
             showPage('post');
