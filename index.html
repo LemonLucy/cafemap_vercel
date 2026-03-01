@@ -1841,9 +1841,8 @@
                 
                 let buttonsHtml = '';
                 if (isMyPost) {
-                    buttonsHtml = '<div style="position:absolute;top:10px;right:10px;display:flex;gap:5px;">' +
-                        '<button onclick="event.stopPropagation();editPost(' + p.id + ')" style="padding:4px 8px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">수정</button>' +
-                        '<button onclick="event.stopPropagation();deletePost(' + p.id + ')" style="padding:4px 8px;background:#f44336;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">삭제</button>' +
+                    buttonsHtml = '<div style="position:absolute;top:10px;right:10px;display:flex;gap:5px;z-index:10;">' +
+                        '<button onclick="event.stopPropagation();deletePost(' + p.id + ')" style="padding:8px 12px;background:#f44336;color:white;border:none;border-radius:4px;font-size:13px;cursor:pointer;font-weight:600;">삭제</button>' +
                         '</div>';
                 }
                 
