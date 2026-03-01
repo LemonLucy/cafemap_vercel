@@ -1740,6 +1740,11 @@
                     </div>
                 </div>
                 <div style="margin-bottom:20px;">
+                    <label style="display:block;margin-bottom:8px;font-weight:600;">사진 첨부</label>
+                    <input type="file" id="postImage" accept="image/*" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;">
+                    <div id="imagePreview" style="margin-top:10px;"></div>
+                </div>
+                <div style="margin-bottom:20px;">
                     <label style="display:block;margin-bottom:8px;font-weight:600;">리뷰</label>
                     <textarea id="postReview" placeholder="카공 경험을 공유해주세요..." style="width:100%;height:150px;padding:10px;border:1px solid #ddd;border-radius:4px;resize:vertical;"></textarea>
                 </div>
@@ -1748,6 +1753,20 @@
                 <h3 style="margin:40px 0 20px 0;padding-top:20px;border-top:1px solid #ddd;">📝 카공 Story</h3>
                 <div id="storyList"></div>
             `;
+            
+            // 이미지 미리보기
+            document.getElementById('postImage').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('imagePreview').innerHTML = 
+                            '<img src="' + e.target.result + '" style="max-width:100%;max-height:200px;border-radius:8px;">';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
             loadStories();
         }
         
@@ -1764,6 +1783,7 @@
         function submitPost() {
             const cafeIdx = document.getElementById('postCafe').value;
             const review = document.getElementById('postReview').value;
+            const imageFile = document.getElementById('postImage').files[0];
             
             if (!cafeIdx || !selectedRating || !review.trim()) {
                 alert('모든 항목을 입력해주세요.');
@@ -1776,13 +1796,27 @@
                 rating: selectedRating,
                 review: review,
                 author: currentUser.name,
-                date: new Date().toLocaleDateString('ko-KR')
+                date: new Date().toLocaleDateString('ko-KR'),
+                image: null
             };
             
-            posts.unshift(post);
-            localStorage.setItem('cagongPosts', JSON.stringify(posts));
-            alert('작성 완료!');
-            loadPostPage();
+            // 이미지가 있으면 Base64로 저장
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    post.image = e.target.result;
+                    posts.unshift(post);
+                    localStorage.setItem('cagongPosts', JSON.stringify(posts));
+                    alert('작성 완료!');
+                    loadPostPage();
+                };
+                reader.readAsDataURL(imageFile);
+            } else {
+                posts.unshift(post);
+                localStorage.setItem('cagongPosts', JSON.stringify(posts));
+                alert('작성 완료!');
+                loadPostPage();
+            }
         }
         
         function loadStories() {
@@ -1792,6 +1826,7 @@
                         <div style="font-weight:600;">${p.cafe}</div>
                         <div>${'⭐'.repeat(p.rating)}</div>
                     </div>
+                    ${p.image ? '<img src="' + p.image + '" style="width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-bottom:10px;">' : ''}
                     <div style="font-size:14px;color:#333;margin-bottom:8px;">${p.review}</div>
                     <div style="font-size:12px;color:#999;">${p.author} · ${p.date}</div>
                 </div>
