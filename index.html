@@ -1729,7 +1729,10 @@
         }
         
         // 포스팅 페이지 로드
+        let selectedImages = [];
+        
         function loadPostPage() {
+            selectedImages = [];
             document.getElementById('postContent').innerHTML = `
                 <div style="margin-bottom:20px;">
                     <label style="display:block;margin-bottom:8px;font-weight:600;">카페 선택</label>
@@ -1745,9 +1748,9 @@
                     </div>
                 </div>
                 <div style="margin-bottom:20px;">
-                    <label style="display:block;margin-bottom:8px;font-weight:600;">사진 첨부</label>
-                    <input type="file" id="postImage" accept="image/*" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;">
-                    <div id="imagePreview" style="margin-top:10px;"></div>
+                    <label style="display:block;margin-bottom:8px;font-weight:600;">사진 첨부 (최대 5장)</label>
+                    <input type="file" id="postImage" accept="image/*" multiple style="width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;">
+                    <div id="imagePreview" style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;"></div>
                 </div>
                 <div style="margin-bottom:20px;">
                     <label style="display:block;margin-bottom:8px;font-weight:600;">리뷰</label>
@@ -1761,18 +1764,37 @@
             
             // 이미지 미리보기
             document.getElementById('postImage').addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
+                const files = Array.from(e.target.files).slice(0, 5);
+                selectedImages = [];
+                document.getElementById('imagePreview').innerHTML = '';
+                
+                files.forEach((file, idx) => {
                     const reader = new FileReader();
                     reader.onload = function(e) {
-                        document.getElementById('imagePreview').innerHTML = 
-                            '<img src="' + e.target.result + '" style="max-width:100%;max-height:200px;border-radius:8px;">';
+                        selectedImages.push(e.target.result);
+                        const imgDiv = document.createElement('div');
+                        imgDiv.style.cssText = 'position:relative;';
+                        imgDiv.innerHTML = 
+                            '<img src="' + e.target.result + '" style="width:100px;height:100px;object-fit:cover;border-radius:8px;">' +
+                            '<button onclick="removeImage(' + idx + ')" style="position:absolute;top:-5px;right:-5px;background:red;color:white;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;line-height:1;">×</button>';
+                        document.getElementById('imagePreview').appendChild(imgDiv);
                     };
                     reader.readAsDataURL(file);
-                }
+                });
             });
             
             loadStories();
+        }
+        
+        function removeImage(idx) {
+            selectedImages.splice(idx, 1);
+            loadPostPage();
+            setTimeout(() => {
+                const cafeSelect = document.getElementById('postCafe');
+                if (cafeSelect && cafeSelect.value) {
+                    // 카페 선택 유지
+                }
+            }, 100);
         }
         
         let selectedRating = 0;
@@ -1788,7 +1810,6 @@
         function submitPost() {
             const cafeIdx = document.getElementById('postCafe').value;
             const review = document.getElementById('postReview').value;
-            const imageFile = document.getElementById('postImage').files[0];
             
             if (!cafeIdx || !selectedRating || !review.trim()) {
                 alert('모든 항목을 입력해주세요.');
@@ -1802,18 +1823,13 @@
                 review: review,
                 author: currentUser.name,
                 date: new Date().toLocaleDateString('ko-KR'),
-                image: null
+                images: selectedImages.length > 0 ? selectedImages : []
             };
             
-            // 이미지가 있으면 Base64로 저장
-            if (imageFile) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    post.image = e.target.result;
-                    posts.unshift(post);
-                    localStorage.setItem('cagongPosts', JSON.stringify(posts));
-                    alert('작성 완료!');
-                    showPage('map');
+            posts.unshift(post);
+            localStorage.setItem('cagongPosts', JSON.stringify(posts));
+            alert('작성 완료!');
+            showPage('map');
                 };
                 reader.readAsDataURL(imageFile);
             } else {
@@ -1825,19 +1841,52 @@
         }
         
         function loadStories() {
-            const html = posts.map(p => `
-                <div style="border:1px solid #ddd;border-radius:8px;padding:15px;margin-bottom:15px;">
+            const html = posts.map(p => {
+                const images = p.images || (p.image ? [p.image] : []);
+                const reviewPreview = p.review.length > 60 ? p.review.substring(0, 60) + '...' : p.review;
+                
+                return `
+                <div onclick="showStoryDetail(${p.id})" style="border:1px solid #ddd;border-radius:8px;padding:15px;margin-bottom:15px;cursor:pointer;">
                     <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
                         <div style="font-weight:600;">${p.cafe}</div>
                         <div>${'⭐'.repeat(p.rating)}</div>
                     </div>
-                    ${p.image ? '<img src="' + p.image + '" style="width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-bottom:10px;">' : ''}
-                    <div style="font-size:14px;color:#333;margin-bottom:8px;">${p.review}</div>
-                    <div style="font-size:12px;color:#999;">${p.author} · ${p.date}</div>
+                    ${images.length > 0 ? '<img src="' + images[0] + '" style="width:100%;max-height:150px;object-fit:cover;border-radius:8px;margin-bottom:10px;">' : ''}
+                    <div style="font-size:14px;color:#333;margin-bottom:8px;">${reviewPreview}</div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <div style="font-size:12px;color:#999;">${p.author} · ${p.date}</div>
+                        ${images.length > 1 ? '<div style="font-size:12px;color:#666;">📷 ' + images.length + '장</div>' : ''}
+                    </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
             const target = document.getElementById('storyList');
             if (target) target.innerHTML = html || '<p style="text-align:center;color:#999;padding:20px 0;">아직 작성된 Story가 없습니다.</p>';
+        }
+        
+        function showStoryDetail(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (!post) return;
+            
+            const images = post.images || (post.image ? [post.image] : []);
+            const imagesHtml = images.map(img => 
+                '<img src="' + img + '" style="width:100%;max-height:300px;object-fit:contain;border-radius:8px;margin-bottom:10px;">'
+            ).join('');
+            
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px;';
+            modal.innerHTML = '<div style="background:white;max-width:600px;max-height:80vh;overflow-y:auto;border-radius:12px;padding:30px;position:relative;width:100%;">' +
+                '<span style="position:absolute;top:15px;right:20px;font-size:32px;cursor:pointer;color:#999;line-height:1;" onclick="this.parentElement.parentElement.remove()">×</span>' +
+                '<h3 style="margin:0 0 15px 0;">' + post.cafe + '</h3>' +
+                '<div style="margin-bottom:15px;">' + '⭐'.repeat(post.rating) + '</div>' +
+                imagesHtml +
+                '<div style="font-size:14px;color:#333;line-height:1.6;margin-bottom:15px;white-space:pre-wrap;">' + post.review + '</div>' +
+                '<div style="font-size:12px;color:#999;">' + post.author + ' · ' + post.date + '</div>' +
+                '</div>';
+            modal.onclick = function(e) { 
+                if (e.target === modal) modal.remove(); 
+            };
+            document.body.appendChild(modal);
         }
         
         // 마이페이지 로드
