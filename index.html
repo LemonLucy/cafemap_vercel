@@ -1809,8 +1809,36 @@
                 document.getElementById('myPageContent').innerHTML = `
                     <div style="text-align:center;padding:40px 20px;">
                         <div style="font-size:48px;margin-bottom:20px;">👤</div>
-                        <p style="color:#666;margin-bottom:20px;">로그인하고 나만의 카공 Story를 작성해보세요!</p>
-                        <button onclick="showLoginForm()" style="padding:12px 30px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:16px;cursor:pointer;">로그인</button>
+                        <p style="color:#666;margin-bottom:30px;">로그인하고 나만의 카공 Story를 작성해보세요!</p>
+                        
+                        <div style="max-width:400px;margin:0 auto;">
+                            <div style="margin-bottom:15px;">
+                                <input type="text" id="loginId" placeholder="아이디" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:4px;font-size:14px;box-sizing:border-box;">
+                            </div>
+                            <div style="margin-bottom:15px;">
+                                <input type="password" id="loginPw" placeholder="비밀번호" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:4px;font-size:14px;box-sizing:border-box;">
+                            </div>
+                            <button onclick="login()" style="width:100%;padding:12px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:16px;cursor:pointer;margin-bottom:10px;">로그인</button>
+                            <button onclick="showSignup()" style="width:100%;padding:12px;background:#fff;color:#4CAF50;border:1px solid #4CAF50;border-radius:4px;font-size:16px;cursor:pointer;margin-bottom:20px;">회원가입</button>
+                            
+                            <div style="border-top:1px solid #ddd;padding-top:20px;margin-top:20px;">
+                                <p style="font-size:13px;color:#999;margin-bottom:15px;">소셜 로그인</p>
+                                <div style="display:flex;gap:10px;justify-content:center;">
+                                    <button onclick="socialLogin('google')" style="flex:1;padding:12px;background:#fff;border:1px solid #ddd;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                                        <span style="font-size:20px;">🔵</span>
+                                        <span style="font-size:13px;">Google</span>
+                                    </button>
+                                    <button onclick="socialLogin('kakao')" style="flex:1;padding:12px;background:#FEE500;border:none;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                                        <span style="font-size:20px;">💬</span>
+                                        <span style="font-size:13px;">Kakao</span>
+                                    </button>
+                                    <button onclick="socialLogin('naver')" style="flex:1;padding:12px;background:#03C75A;color:white;border:none;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                                        <span style="font-size:20px;">N</span>
+                                        <span style="font-size:13px;">Naver</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 `;
             } else {
@@ -1845,13 +1873,107 @@
             }
         }
         
-        function showLoginForm() {
-            const name = prompt('닉네임을 입력하세요:');
-            if (name && name.trim()) {
-                currentUser = { name: name.trim() };
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                loadMyPage();
+        function login() {
+            const id = document.getElementById('loginId').value.trim();
+            const pw = document.getElementById('loginPw').value;
+            
+            if (!id || !pw) {
+                alert('아이디와 비밀번호를 입력해주세요.');
+                return;
             }
+            
+            // 로컬스토리지에서 사용자 정보 가져오기
+            const users = JSON.parse(localStorage.getItem('cagongUsers')) || [];
+            const user = users.find(u => u.id === id && u.password === pw);
+            
+            if (user) {
+                currentUser = { id: user.id, name: user.name };
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                alert('로그인 성공!');
+                loadMyPage();
+            } else {
+                alert('아이디 또는 비밀번호가 일치하지 않습니다.');
+            }
+        }
+        
+        function showSignup() {
+            document.getElementById('myPageContent').innerHTML = `
+                <div style="max-width:400px;margin:0 auto;padding:20px;">
+                    <h2 style="text-align:center;margin-bottom:30px;">회원가입</h2>
+                    <div style="margin-bottom:15px;">
+                        <label style="display:block;margin-bottom:5px;font-size:14px;font-weight:600;">아이디</label>
+                        <input type="text" id="signupId" placeholder="4자 이상" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:4px;font-size:14px;box-sizing:border-box;">
+                    </div>
+                    <div style="margin-bottom:15px;">
+                        <label style="display:block;margin-bottom:5px;font-size:14px;font-weight:600;">비밀번호</label>
+                        <input type="password" id="signupPw" placeholder="6자 이상" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:4px;font-size:14px;box-sizing:border-box;">
+                    </div>
+                    <div style="margin-bottom:15px;">
+                        <label style="display:block;margin-bottom:5px;font-size:14px;font-weight:600;">비밀번호 확인</label>
+                        <input type="password" id="signupPwConfirm" placeholder="비밀번호 재입력" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:4px;font-size:14px;box-sizing:border-box;">
+                    </div>
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block;margin-bottom:5px;font-size:14px;font-weight:600;">닉네임</label>
+                        <input type="text" id="signupName" placeholder="2자 이상" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:4px;font-size:14px;box-sizing:border-box;">
+                    </div>
+                    <button onclick="signup()" style="width:100%;padding:12px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:16px;cursor:pointer;margin-bottom:10px;">가입하기</button>
+                    <button onclick="loadMyPage()" style="width:100%;padding:12px;background:#fff;color:#666;border:1px solid #ddd;border-radius:4px;font-size:16px;cursor:pointer;">취소</button>
+                </div>
+            `;
+        }
+        
+        function signup() {
+            const id = document.getElementById('signupId').value.trim();
+            const pw = document.getElementById('signupPw').value;
+            const pwConfirm = document.getElementById('signupPwConfirm').value;
+            const name = document.getElementById('signupName').value.trim();
+            
+            if (id.length < 4) {
+                alert('아이디는 4자 이상이어야 합니다.');
+                return;
+            }
+            if (pw.length < 6) {
+                alert('비밀번호는 6자 이상이어야 합니다.');
+                return;
+            }
+            if (pw !== pwConfirm) {
+                alert('비밀번호가 일치하지 않습니다.');
+                return;
+            }
+            if (name.length < 2) {
+                alert('닉네임은 2자 이상이어야 합니다.');
+                return;
+            }
+            
+            // 중복 확인
+            const users = JSON.parse(localStorage.getItem('cagongUsers')) || [];
+            if (users.find(u => u.id === id)) {
+                alert('이미 사용 중인 아이디입니다.');
+                return;
+            }
+            if (users.find(u => u.name === name)) {
+                alert('이미 사용 중인 닉네임입니다.');
+                return;
+            }
+            
+            // 사용자 추가
+            users.push({ id, password: pw, name });
+            localStorage.setItem('cagongUsers', JSON.stringify(users));
+            
+            alert('회원가입 완료! 로그인해주세요.');
+            loadMyPage();
+        }
+        
+        function socialLogin(provider) {
+            alert(`${provider} 소셜 로그인은 준비 중입니다.\n현재는 일반 로그인을 이용해주세요.`);
+            // TODO: 실제 소셜 로그인 구현 시
+            // Google: OAuth 2.0
+            // Kakao: Kakao Login API
+            // Naver: Naver Login API
+        }
+        
+        function showLoginForm() {
+            loadMyPage();
         }
         
         function logout() {
