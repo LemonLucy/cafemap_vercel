@@ -1285,7 +1285,7 @@
             html += '<div style="margin-top:20px;">';
             html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">';
             html += '<h3 style="font-size:14px;margin:0;">💬 카공 Story (' + cafeStories.length + ')</h3>';
-            html += '<button onclick="event.stopPropagation();writeStoryForCafe(\'' + cafe.name.replace(/'/g, "\\'") + '\')" style="padding:6px 12px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;">Story 작성</button>';
+            html += '<button onclick="event.stopPropagation();writeStoryForCafe(this.dataset.cafe)" data-cafe="' + cafe.name.replace(/"/g, '&quot;') + '" style="padding:6px 12px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;">Story 작성</button>';
             html += '</div>';
             
             if (cafeStories.length > 0) {
