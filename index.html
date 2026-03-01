@@ -731,6 +731,7 @@
         let map, allCafes = [], markers = [], activeMarkerIdx = null;
         let currentSort = 'score-high';
         let userLocation = null;
+        let userMarker = null;
         
         // 검색 초기화
         function clearSearch() {
@@ -862,6 +863,7 @@
                             lng: position.coords.longitude
                         };
                         console.log('사용자 위치:', userLocation);
+                        showUserLocationMarker();
                     },
                     error => console.log('위치 권한 거부 또는 에러:', error)
                 );
@@ -1161,6 +1163,7 @@
                             };
                             map.setCenter(new kakao.maps.LatLng(userLocation.lat, userLocation.lng));
                             map.setLevel(4);
+                            showUserLocationMarker();
                         },
                         () => alert('위치 권한이 필요합니다.')
                     );
@@ -1330,6 +1333,30 @@
                     }
                 };
             });
+            
+            // 사용자 위치 마커 다시 표시
+            showUserLocationMarker();
+        }
+        
+        function showUserLocationMarker() {
+            if (!userLocation) return;
+            
+            // 기존 사용자 마커 제거
+            if (userMarker) {
+                userMarker.setMap(null);
+            }
+            
+            // 사용자 위치 마커 생성
+            const userContent = document.createElement('div');
+            userContent.style.cssText = 'width: 20px; height: 20px; background: #4285F4; border: 3px solid white; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.3); z-index: 1000;';
+            
+            userMarker = new kakao.maps.CustomOverlay({
+                position: new kakao.maps.LatLng(userLocation.lat, userLocation.lng),
+                content: userContent,
+                zIndex: 1000
+            });
+            
+            userMarker.setMap(map);
         }
         
         function updateMarker(idx, data) {
