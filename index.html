@@ -1830,14 +1830,6 @@
             localStorage.setItem('cagongPosts', JSON.stringify(posts));
             alert('작성 완료!');
             showPage('map');
-                };
-                reader.readAsDataURL(imageFile);
-            } else {
-                posts.unshift(post);
-                localStorage.setItem('cagongPosts', JSON.stringify(posts));
-                alert('작성 완료!');
-                showPage('map');
-            }
         }
         
         function loadStories() {
