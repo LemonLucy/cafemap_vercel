@@ -1875,29 +1875,6 @@
             const target = document.getElementById('storyList');
             if (target) target.innerHTML = html || '<p style="text-align:center;color:#999;padding:20px 0;">아직 작성된 Story가 없습니다.</p>';
         }
-                        '<button onclick="event.stopPropagation();deletePost(' + p.id + ')" style="padding:4px 8px;background:#f44336;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">삭제</button>' +
-                        '</div>' : ''}
-                    <div onclick="showStoryDetail(${p.id})" style="cursor:pointer;">
-                        <div style="display:flex;justify-content:space-between;margin-bottom:10px;padding-right:${isMyPost ? '100px' : '0'};">
-                            <div style="font-weight:600;">${p.cafe}</div>
-                            <div>${'⭐'.repeat(p.rating)}</div>
-                        </div>
-                        ${images.length > 0 ? 
-                            '<div style="display:flex;gap:5px;overflow-x:auto;margin-bottom:10px;">' + 
-                            images.map(img => '<img src="' + img + '" style="height:80px;border-radius:4px;flex-shrink:0;">').join('') + 
-                            '</div>' : ''}
-                        <div style="font-size:14px;color:#333;margin-bottom:8px;line-height:1.5;">${reviewPreview}</div>
-                        <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <div style="font-size:12px;color:#999;">${p.author} · ${p.date}</div>
-                            ${images.length > 0 ? '<div style="font-size:12px;color:#666;">📷 ' + images.length + '장</div>' : ''}
-                        </div>
-                    </div>
-                </div>
-            `;
-            }).join('');
-            const target = document.getElementById('storyList');
-            if (target) target.innerHTML = html || '<p style="text-align:center;color:#999;padding:20px 0;">아직 작성된 Story가 없습니다.</p>';
-        }
         
         function deletePost(postId) {
             if (!confirm('정말 삭제하시겠습니까?')) return;
