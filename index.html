@@ -1281,6 +1281,30 @@
                 html += '</div></div>';
             }
             
+            // 카공 Story 섹션 (블로그 리뷰 위로 이동)
+            const cafeStories = posts.filter(p => p.cafe === cafe.name);
+            html += '<div style="margin-top:20px;">';
+            html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">';
+            html += '<h3 style="font-size:14px;margin:0;">💬 카공 Story (' + cafeStories.length + ')</h3>';
+            html += '<button onclick="event.stopPropagation();writeStoryForCafe(\'' + cafe.name.replace(/'/g, "\\'") + '\')" style="padding:6px 12px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;">Story 작성</button>';
+            html += '</div>';
+            
+            if (cafeStories.length > 0) {
+                cafeStories.forEach(function(story) {
+                    html += '<div style="padding:12px;margin:8px 0;background:#f0f8ff;border-radius:8px;border-left:3px solid #2196F3;">' +
+                        '<div style="display:flex;justify-content:space-between;margin-bottom:6px;">' +
+                        '<span style="font-weight:600;font-size:13px;">' + story.author + '</span>' +
+                        '<span style="font-size:12px;">' + '⭐'.repeat(story.rating) + '</span>' +
+                        '</div>' +
+                        '<div style="font-size:13px;color:#333;line-height:1.5;margin-bottom:6px;">' + story.review + '</div>' +
+                        '<div style="font-size:11px;color:#999;">' + story.date + '</div>' +
+                        '</div>';
+                });
+            } else {
+                html += '<div style="text-align:center;padding:20px;color:#999;background:#f9f9f9;border-radius:8px;">아직 작성된 Story가 없습니다.<br>첫 번째 Story를 작성해보세요!</div>';
+            }
+            html += '</div>';
+            
             // 카페 이미지 갤러리 (Object Storage)
             if (data.images && data.images.length > 0) {
                 html += '<div style="margin-top:20px;"><h3 style="font-size:14px;margin-bottom:10px;">📷 카페 사진 (' + data.images.length + ')</h3>';
@@ -1316,23 +1340,6 @@
                 html += '<div style="margin-top:20px;"><h3 style="font-size:14px;margin-bottom:10px;">📝 블로그 리뷰</h3>';
                 data.blogUrls.forEach(function(url, i) {
                     html += '<a href="' + url + '" target="_blank" style="display:block;padding:12px;margin:8px 0;background:#f0f0f0;border-radius:6px;text-decoration:none;color:#333;transition:background 0.2s;" onmouseover="this.style.background=\'#e0e0e0\'" onmouseout="this.style.background=\'#f0f0f0\'">📝 블로그 리뷰 ' + (i + 1) + '</a>';
-                });
-                html += '</div>';
-            }
-            
-            // 카공 Story 섹션
-            const cafeStories = posts.filter(p => p.cafe === cafe.name);
-            if (cafeStories.length > 0) {
-                html += '<div style="margin-top:20px;"><h3 style="font-size:14px;margin-bottom:10px;">💬 카공 Story (' + cafeStories.length + ')</h3>';
-                cafeStories.forEach(function(story) {
-                    html += '<div style="padding:12px;margin:8px 0;background:#f0f8ff;border-radius:8px;border-left:3px solid #2196F3;">' +
-                        '<div style="display:flex;justify-content:space-between;margin-bottom:6px;">' +
-                        '<span style="font-weight:600;font-size:13px;">' + story.author + '</span>' +
-                        '<span style="font-size:12px;">' + '⭐'.repeat(story.rating) + '</span>' +
-                        '</div>' +
-                        '<div style="font-size:13px;color:#333;line-height:1.5;margin-bottom:6px;">' + story.review + '</div>' +
-                        '<div style="font-size:11px;color:#999;">' + story.date + '</div>' +
-                        '</div>';
                 });
                 html += '</div>';
             }
@@ -1853,6 +1860,33 @@
                 localStorage.removeItem('currentUser');
                 loadMyPage();
             }
+        }
+        
+        // 특정 카페에 대한 Story 작성
+        function writeStoryForCafe(cafeName) {
+            if (!currentUser) {
+                if (confirm('로그인이 필요합니다. 로그인하시겠습니까?')) {
+                    showPage('mypage');
+                }
+                return;
+            }
+            
+            // 모달 닫기
+            document.querySelectorAll('div[style*="position:fixed"][style*="z-index:2000"]').forEach(el => el.remove());
+            
+            // 포스팅 페이지로 이동
+            showPage('post');
+            
+            // 카페 자동 선택
+            setTimeout(() => {
+                const cafeSelect = document.getElementById('postCafe');
+                if (cafeSelect) {
+                    const cafeIndex = allCafes.findIndex(c => c.name === cafeName);
+                    if (cafeIndex !== -1) {
+                        cafeSelect.value = cafeIndex;
+                    }
+                }
+            }, 100);
         }
     </script>
 </body>
