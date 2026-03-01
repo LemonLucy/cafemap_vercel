@@ -1837,26 +1837,49 @@
                 const images = p.images || (p.image ? [p.image] : []);
                 const reviewPreview = p.review.length > 60 ? p.review.substring(0, 60) + '...' : p.review;
                 
+                const isMyPost = currentUser && p.author === currentUser.name;
+                
                 return `
-                <div onclick="showStoryDetail(${p.id})" style="border:1px solid #ddd;border-radius:8px;padding:15px;margin-bottom:15px;cursor:pointer;">
-                    <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
-                        <div style="font-weight:600;">${p.cafe}</div>
-                        <div>${'⭐'.repeat(p.rating)}</div>
-                    </div>
-                    ${images.length > 0 ? 
-                        '<div style="display:flex;gap:5px;overflow-x:auto;margin-bottom:10px;">' + 
-                        images.map(img => '<img src="' + img + '" style="height:80px;border-radius:4px;flex-shrink:0;">').join('') + 
+                <div style="border:1px solid #ddd;border-radius:8px;padding:15px;margin-bottom:15px;position:relative;">
+                    ${isMyPost ? '<div style="position:absolute;top:10px;right:10px;display:flex;gap:5px;">' +
+                        '<button onclick="event.stopPropagation();editPost(' + p.id + ')" style="padding:4px 8px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">수정</button>' +
+                        '<button onclick="event.stopPropagation();deletePost(' + p.id + ')" style="padding:4px 8px;background:#f44336;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">삭제</button>' +
                         '</div>' : ''}
-                    <div style="font-size:14px;color:#333;margin-bottom:8px;line-height:1.5;">${reviewPreview}</div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;">
-                        <div style="font-size:12px;color:#999;">${p.author} · ${p.date}</div>
-                        ${images.length > 0 ? '<div style="font-size:12px;color:#666;">📷 ' + images.length + '장</div>' : ''}
+                    <div onclick="showStoryDetail(${p.id})" style="cursor:pointer;">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:10px;padding-right:${isMyPost ? '100px' : '0'};">
+                            <div style="font-weight:600;">${p.cafe}</div>
+                            <div>${'⭐'.repeat(p.rating)}</div>
+                        </div>
+                        ${images.length > 0 ? 
+                            '<div style="display:flex;gap:5px;overflow-x:auto;margin-bottom:10px;">' + 
+                            images.map(img => '<img src="' + img + '" style="height:80px;border-radius:4px;flex-shrink:0;">').join('') + 
+                            '</div>' : ''}
+                        <div style="font-size:14px;color:#333;margin-bottom:8px;line-height:1.5;">${reviewPreview}</div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <div style="font-size:12px;color:#999;">${p.author} · ${p.date}</div>
+                            ${images.length > 0 ? '<div style="font-size:12px;color:#666;">📷 ' + images.length + '장</div>' : ''}
+                        </div>
                     </div>
                 </div>
             `;
             }).join('');
             const target = document.getElementById('storyList');
             if (target) target.innerHTML = html || '<p style="text-align:center;color:#999;padding:20px 0;">아직 작성된 Story가 없습니다.</p>';
+        }
+        
+        function deletePost(postId) {
+            if (!confirm('정말 삭제하시겠습니까?')) return;
+            
+            const index = posts.findIndex(p => p.id === postId);
+            if (index !== -1) {
+                posts.splice(index, 1);
+                localStorage.setItem('cagongPosts', JSON.stringify(posts));
+                loadStories();
+            }
+        }
+        
+        function editPost(postId) {
+            alert('수정 기능은 준비 중입니다.');
         }
         
         function showStoryDetail(postId) {
