@@ -761,9 +761,7 @@
         console.log('=== 스크립트 시작 ===');
         
         // API Base URL 설정
-        const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://138.2.127.70'
-            : '';
+        const API_BASE_URL = 'http://138.2.127.70';
         
         let map, allCafes = [], markers = [], activeMarkerIdx = null;
         let currentSort = 'score-high';
