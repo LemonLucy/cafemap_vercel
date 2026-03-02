@@ -1350,7 +1350,7 @@
             if (!container) return;
             
             try {
-                const response = await fetch('/api/reviews?cafe_name=' + encodeURIComponent(cafeName));
+                const response = await fetch('http://138.2.127.70:8001/api/reviews?cafe_name=' + encodeURIComponent(cafeName));
                 const result = await response.json();
                 const stories = result.reviews || [];
                 
@@ -1379,8 +1379,7 @@
                             '</div>';
                         
                         if (story.image_url) {
-                            const imgPath = story.image_url.replace('/uploads/', '');
-                            html += '<div style="margin-bottom:8px;"><img src="/api/image?path=' + imgPath + '" style="max-width:100%;border-radius:6px;"></div>';
+                            html += '<div style="margin-bottom:8px;"><img src="http://138.2.127.70:8001' + story.image_url + '" style="max-width:100%;border-radius:6px;"></div>';
                         }
                         
                         html += '<div style="font-size:13px;color:#333;line-height:1.5;margin-bottom:6px;">' + story.review_text + '</div>' +
@@ -1882,7 +1881,7 @@
             // API로 전송
             try {
                 const imageData = selectedImages.length > 0 ? selectedImages[0] : null;
-                const response = await fetch('/api/add-review', {
+                const response = await fetch('http://138.2.127.70:8001/api/reviews', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
