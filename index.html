@@ -1483,7 +1483,14 @@
                 if (response.ok) {
                     alert('삭제되었습니다.');
                     localStorage.removeItem('stories_' + cafeName);
-                    loadCafeStories(cafeName);
+                    
+                    // 현재 페이지에 따라 새로고침
+                    const currentPage = document.querySelector('[style*="display: block"][id$="Page"]');
+                    if (currentPage && currentPage.id === 'myPage') {
+                        loadMyPage();
+                    } else {
+                        loadCafeStories(cafeName);
+                    }
                 } else {
                     alert('삭제 실패');
                 }
