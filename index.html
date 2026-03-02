@@ -704,6 +704,13 @@
         <div id="myPageContent"></div>
     </div>
     
+    <!-- 리뷰 상세 모달 -->
+    <div id="reviewDetailModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:2000;overflow-y:auto;">
+        <div style="max-width:600px;margin:50px auto;background:#fff;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+            <div id="reviewDetailContent"></div>
+        </div>
+    </div>
+    
     <!-- PWA 설치 배너 -->
     <div id="pwaInstallBanner">
         <div class="banner-content">
@@ -1381,6 +1388,10 @@
                 }
             }
             
+            allStories = stories;  // 전역 변수에 저장
+                }
+            }
+            
             // 제목 업데이트
             const titleEl = container.previousElementSibling;
             if (titleEl && titleEl.querySelector('h3')) {
@@ -1395,11 +1406,11 @@
                     const images = story.image_url ? story.image_url.split(',') : [];
                     const contentPreview = (story.content || story.review_text || '').substring(0, 100);
                     
-                    html += '<div style="padding:12px;margin:8px 0;background:#fff;border:1px solid #e0e0e0;border-radius:8px;position:relative;max-height:200px;overflow:hidden;">';
+                    html += '<div onclick="showReviewDetail(' + story.id + ')" style="padding:12px;margin:8px 0;background:#fff;border:1px solid #e0e0e0;border-radius:8px;position:relative;max-height:200px;overflow:hidden;cursor:pointer;">';
                     
                     if (isMyStory) {
                         html += '<div style="position:absolute;top:8px;right:8px;z-index:10;">' +
-                            '<button onclick="deleteStory(' + story.id + ',\'' + cafeName.replace(/'/g, "\\'") + '\')" style="padding:4px 8px;background:#f44336;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">삭제</button>' +
+                            '<button onclick="event.stopPropagation();deleteStory(' + story.id + ',\'' + cafeName.replace(/'/g, "\\'") + '\')" style="padding:4px 8px;background:#f44336;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">삭제</button>' +
                             '</div>';
                     }
                     
@@ -1426,6 +1437,36 @@
             }
             
             container.innerHTML = html;
+        }
+        
+        let allStories = [];
+        
+        function showReviewDetail(reviewId) {
+            const review = allStories.find(s => s.id === reviewId);
+            if (!review) return;
+            
+            const images = review.image_url ? review.image_url.split(',') : [];
+            const content = review.content || review.review_text || '';
+            
+            let html = '<div style="padding:20px;">';
+            html += '<button onclick="document.getElementById(\'reviewDetailModal\').style.display=\'none\'" style="float:right;background:none;border:none;font-size:24px;cursor:pointer;">&times;</button>';
+            html += '<h3 style="margin-bottom:10px;">' + (review.nickname || review.username || '익명') + '</h3>';
+            html += '<div style="margin-bottom:15px;">' + '⭐'.repeat(review.rating) + '</div>';
+            
+            if (images.length > 0) {
+                html += '<div style="margin-bottom:15px;">';
+                images.forEach(img => {
+                    html += '<img src="' + img.trim() + '" style="width:100%;max-width:400px;border-radius:8px;margin-bottom:10px;">';
+                });
+                html += '</div>';
+            }
+            
+            html += '<div style="font-size:14px;line-height:1.6;white-space:pre-wrap;">' + content + '</div>';
+            html += '<div style="font-size:12px;color:#999;margin-top:15px;">' + new Date(review.created_at).toLocaleDateString() + '</div>';
+            html += '</div>';
+            
+            document.getElementById('reviewDetailContent').innerHTML = html;
+            document.getElementById('reviewDetailModal').style.display = 'block';
         }
         
         async function deleteStory(storyId, cafeName) {
