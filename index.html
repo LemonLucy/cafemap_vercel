@@ -1257,35 +1257,35 @@
             
             if (data.workScore > 0) {
                 html += '<div style="padding:16px;background:#f5f0eb;border-radius:8px;text-align:center;">' +
-                    '<div style="font-size:18px;font-weight:600;color:#c9b8a3;">WORK</div>' +
+                    '<div style="font-size:24px;">💼</div>' +
                     '<div style="font-size:20px;font-weight:bold;margin:8px 0;color:#5d4e37;">' + data.workScore + '/10</div>' +
                     '<div style="font-size:12px;color:#8b7355;">작업 적합도</div></div>';
             }
             
             if (data.outletLevel !== '정보 없음') {
                 html += '<div style="padding:16px;background:#f5f0eb;border-radius:8px;text-align:center;">' +
-                    '<div style="font-size:18px;font-weight:600;color:#c9b8a3;">⚡</div>' +
+                    '<div style="font-size:24px;">🔌</div>' +
                     '<div style="font-size:14px;font-weight:bold;margin:8px 0;color:#5d4e37;">' + data.outletLevel + '</div>' +
                     '<div style="font-size:12px;color:#8b7355;">콘센트</div></div>';
             }
             
             if (data.noiseLevel !== '정보 없음') {
                 html += '<div style="padding:16px;background:#f5f0eb;border-radius:8px;text-align:center;">' +
-                    '<div style="font-size:18px;font-weight:600;color:#c9b8a3;">♪</div>' +
+                    '<div style="font-size:24px;">🔇</div>' +
                     '<div style="font-size:14px;font-weight:bold;margin:8px 0;color:#5d4e37;">' + data.noiseLevel + '</div>' +
                     '<div style="font-size:12px;color:#8b7355;">소음 레벨</div></div>';
             }
             
             if (data.tableHeight !== '정보 없음') {
                 html += '<div style="padding:16px;background:#f5f0eb;border-radius:8px;text-align:center;">' +
-                    '<div style="font-size:18px;font-weight:600;color:#c9b8a3;">H</div>' +
+                    '<div style="font-size:24px;">📏</div>' +
                     '<div style="font-size:14px;font-weight:bold;margin:8px 0;color:#5d4e37;">' + data.tableHeight + '</div>' +
                     '<div style="font-size:12px;color:#8b7355;">테이블 높이</div></div>';
             }
             
             if (data.spaceLevel && data.spaceLevel !== '정보 없음') {
                 html += '<div style="padding:16px;background:#f5f0eb;border-radius:8px;text-align:center;">' +
-                    '<div style="font-size:18px;font-weight:600;color:#c9b8a3;">□</div>' +
+                    '<div style="font-size:24px;">📐</div>' +
                     '<div style="font-size:14px;font-weight:bold;margin:8px 0;color:#5d4e37;">' + data.spaceLevel + '</div>' +
                     '<div style="font-size:12px;color:#8b7355;">공간감</div></div>';
             }
