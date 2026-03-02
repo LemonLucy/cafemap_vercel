@@ -1363,10 +1363,10 @@
                 } catch (e) {}
             }
             
-            // 캐시가 없으면 API 호출 시도
+            // 캐시가 없으면 API 호출
             if (stories.length === 0) {
                 try {
-                    const response = await fetch('http://138.2.127.70:8001/api/reviews?cafe_name=' + encodeURIComponent(cafeName));
+                    const response = await fetch('/api/reviews?cafe_name=' + encodeURIComponent(cafeName));
                     const result = await response.json();
                     stories = result.reviews || [];
                     
@@ -1376,7 +1376,7 @@
                         stories: stories
                     }));
                 } catch (err) {
-                    console.error('Story API 실패, 캐시 사용:', err);
+                    console.error('Story API 실패:', err);
                 }
             }
             
@@ -1405,7 +1405,8 @@
                         '</div>';
                     
                     if (story.image_url) {
-                        html += '<div style="margin-bottom:8px;"><img src="http://138.2.127.70:8001' + story.image_url + '" style="max-width:100%;border-radius:6px;"></div>';
+                        const imgPath = story.image_url.replace('/uploads/', '');
+                        html += '<div style="margin-bottom:8px;"><img src="/api/image?path=' + imgPath + '" style="max-width:100%;border-radius:6px;"></div>';
                     }
                     
                     html += '<div style="font-size:13px;color:#333;line-height:1.5;margin-bottom:6px;">' + story.review_text + '</div>' +
@@ -1903,7 +1904,7 @@
             // API로 전송
             try {
                 const imageData = selectedImages.length > 0 ? selectedImages[0] : null;
-                const response = await fetch('http://138.2.127.70:8001/api/reviews', {
+                const response = await fetch('/api/add-review', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
