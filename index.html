@@ -96,6 +96,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            object-position: left center;
         }
         
         #map { 
@@ -628,7 +629,7 @@
 <body>
     <!-- 로딩 화면 -->
     <div id="loading-screen">
-        <img src="/cagong6.png" alt="CoffeeMap">
+        <img src="/카공맵2.png" alt="CoffeeMap">
     </div>
 
     <!-- 구글맵 스타일 검색바 -->
@@ -1909,79 +1910,65 @@
         
         // Best 카페 로드
         async function loadBestCafes() {
-            let userLat = null, userLng = null;
+            let region = '서울';
             
-            // 사용자 위치 가져오기
+            // 사용자 위치로 지역 추출
             if (navigator.geolocation) {
                 try {
                     const position = await new Promise((resolve, reject) => {
                         navigator.geolocation.getCurrentPosition(resolve, reject, {timeout: 5000});
                     });
-                    userLat = position.coords.latitude;
-                    userLng = position.coords.longitude;
-                    console.log('User location:', userLat, userLng);
+                    
+                    // 역지오코딩으로 주소 가져오기
+                    const geocoder = new kakao.maps.services.Geocoder();
+                    const coord = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                    
+                    await new Promise((resolve) => {
+                        geocoder.coord2Address(coord.getLng(), coord.getLat(), (result, status) => {
+                            if (status === kakao.maps.services.Status.OK && result[0]) {
+                                const addr = result[0].address;
+                                // 시/군/구 추출 (예: 안양시, 강남구)
+                                region = addr.region_2depth_name || addr.region_1depth_name || '서울';
+                                console.log('User region:', region);
+                            }
+                            resolve();
+                        });
+                    });
                 } catch (err) {
-                    console.log('위치 조회 실패, 서울 지역 표시', err);
+                    console.log('위치 조회 실패, 서울 지역 표시');
                 }
             }
             
-            // 거리 계산 함수 (Haversine)
-            function getDistance(lat1, lng1, lat2, lng2) {
-                const R = 6371; // km
-                const dLat = (lat2 - lat1) * Math.PI / 180;
-                const dLng = (lng2 - lng1) * Math.PI / 180;
-                const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                    Math.sin(dLng/2) * Math.sin(dLng/2);
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-                return R * c;
-            }
-            
-            let filtered = allCafes.filter(cafe => 
-                cafe.detailData && 
-                cafe.detailData.images && 
-                cafe.detailData.images.length > 0 &&
-                cafe.totalScore > 0
-            );
-            
-            console.log('Cafes with images:', filtered.length);
-            
-            if (userLat && userLng) {
-                // 2km 내 카페 필터링
-                filtered = filtered.filter(cafe => {
-                    const dist = getDistance(userLat, userLng, cafe.lat, cafe.lng);
-                    return dist <= 2;
-                });
-                console.log('Cafes within 2km:', filtered.length);
-            } else {
-                // 서울 지역만
-                filtered = filtered.filter(cafe => cafe.address && cafe.address.includes('서울'));
-                console.log('Seoul cafes:', filtered.length);
-            }
-            
-            const sorted = filtered.sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0)).slice(0, 10);
-            
-            const html = sorted.map((cafe, idx) => `
-                <div onclick="showModal(allCafes[${allCafes.indexOf(cafe)}], allCafes[${allCafes.indexOf(cafe)}].detailData)" style="border:1px solid #ddd;border-radius:8px;padding:15px;margin-bottom:15px;cursor:pointer;">
-                    ${cafe.detailData.images && cafe.detailData.images[0] ? `
-                        <img src="${cafe.detailData.images[0]}" style="width:100%;height:200px;object-fit:cover;border-radius:8px;margin-bottom:10px;">
-                    ` : ''}
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-                        <div style="font-weight:600;font-size:16px;">${idx + 1}. ${cafe.name}</div>
-                        <div style="background:#4CAF50;color:white;padding:4px 12px;border-radius:12px;font-size:14px;font-weight:600;">
-                            ${cafe.totalScore.toFixed(1)}
+            // API 호출
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/best-cafes?region=${encodeURIComponent(region)}`);
+                const cafes = await response.json();
+                
+                const html = cafes.map((cafe, idx) => `
+                    <div style="border:1px solid #ddd;border-radius:8px;padding:15px;margin-bottom:15px;cursor:pointer;">
+                        ${cafe.images && cafe.images[0] ? `
+                            <img src="${cafe.images[0]}" style="width:100%;height:200px;object-fit:cover;border-radius:8px;margin-bottom:10px;">
+                        ` : ''}
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                            <div style="font-weight:600;font-size:16px;">${idx + 1}. ${cafe.name}</div>
+                            <div style="background:#4CAF50;color:white;padding:4px 12px;border-radius:12px;font-size:14px;font-weight:600;">
+                                ${cafe.totalScore ? cafe.totalScore.toFixed(1) : '-'}
+                            </div>
+                        </div>
+                        <div style="font-size:13px;color:#666;margin-bottom:8px;">${cafe.address}</div>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+                            <span style="background:#f0f0f0;padding:4px 8px;border-radius:4px;font-size:12px;">⚡ ${cafe.outletLevel || '정보없음'}</span>
+                            <span style="background:#f0f0f0;padding:4px 8px;border-radius:4px;font-size:12px;">📶 ${cafe.hasWifi ? 'WiFi' : 'WiFi 정보 없음'}</span>
+                            <span style="background:#f0f0f0;padding:4px 8px;border-radius:4px;font-size:12px;">🔇 ${cafe.noiseLevel || '정보없음'}</span>
                         </div>
                     </div>
-                    <div style="font-size:13px;color:#666;margin-bottom:8px;">${cafe.address}</div>
-                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
-                        <span style="background:#f0f0f0;padding:4px 8px;border-radius:4px;font-size:12px;">⚡ ${cafe.detailData.outletLevel}</span>
-                        <span style="background:#f0f0f0;padding:4px 8px;border-radius:4px;font-size:12px;">📶 ${cafe.detailData.hasWifi ? 'WiFi' : 'WiFi 정보 없음'}</span>
-                        <span style="background:#f0f0f0;padding:4px 8px;border-radius:4px;font-size:12px;">🔇 ${cafe.detailData.noiseLevel}</span>
-                    </div>
-                </div>
-            `).join('');
-            
-            document.getElementById('bestList').innerHTML = html || '<p style="text-align:center;color:#999;padding:40px 0;">주변에 카페가 없습니다.</p>';
+                `).join('');
+                
+                document.getElementById('bestList').innerHTML = html || '<p style="text-align:center;color:#999;padding:40px 0;">주변에 카페가 없습니다.</p>';
+            } catch (err) {
+                console.error('Best 카페 로드 실패:', err);
+                document.getElementById('bestList').innerHTML = '<p style="text-align:center;color:#999;padding:40px 0;">데이터 로딩 실패</p>';
+            }
         }
         
         // 포스팅 페이지 로드
