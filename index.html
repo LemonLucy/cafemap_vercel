@@ -2230,6 +2230,7 @@
                         });
                         if (response.ok) {
                             myReviews = await response.json();
+                            allStories = myReviews;  // 전역 변수에 저장
                         }
                     } catch (err) {
                         console.error('리뷰 로드 실패:', err);
