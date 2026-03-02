@@ -1,8 +1,8 @@
 {
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "http://138.2.127.70/api/:path*"
+  "functions": {
+    "api/proxy.js": {
+      "memory": 1024,
+      "maxDuration": 10
     }
-  ]
+  }
 }
