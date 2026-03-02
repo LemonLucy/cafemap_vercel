@@ -1392,25 +1392,33 @@
             if (stories.length > 0) {
                 stories.forEach(function(story) {
                     const isMyStory = currentUser && currentUser.id === story.user_id;
-                    html += '<div style="padding:12px;margin:8px 0;background:#f0f8ff;border-radius:8px;border-left:3px solid #2196F3;position:relative;">';
+                    const images = story.image_url ? story.image_url.split(',') : [];
+                    const contentPreview = (story.content || story.review_text || '').substring(0, 100);
+                    
+                    html += '<div style="padding:12px;margin:8px 0;background:#fff;border:1px solid #e0e0e0;border-radius:8px;position:relative;max-height:200px;overflow:hidden;">';
                     
                     if (isMyStory) {
-                        html += '<div style="position:absolute;top:8px;right:8px;display:flex;gap:5px;">' +
+                        html += '<div style="position:absolute;top:8px;right:8px;z-index:10;">' +
                             '<button onclick="deleteStory(' + story.id + ',\'' + cafeName.replace(/'/g, "\\'") + '\')" style="padding:4px 8px;background:#f44336;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">삭제</button>' +
                             '</div>';
                     }
                     
-                    html += '<div style="display:flex;justify-content:space-between;margin-bottom:6px;padding-right:60px;">' +
-                        '<span style="font-weight:600;font-size:13px;">' + (story.username || '익명') + '</span>' +
+                    html += '<div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-right:60px;">' +
+                        '<span style="font-weight:600;font-size:13px;">' + (story.nickname || story.username || '익명') + '</span>' +
                         '<span style="font-size:12px;">' + '⭐'.repeat(story.rating) + '</span>' +
                         '</div>';
                     
-                    if (story.image_url) {
-                        html += '<div style="margin-bottom:8px;"><img src="' + story.image_url + '" style="max-width:100%;border-radius:6px;"></div>';
+                    // 이미지 가로 스크롤
+                    if (images.length > 0) {
+                        html += '<div style="display:flex;gap:8px;overflow-x:auto;margin-bottom:8px;padding-bottom:4px;">';
+                        images.forEach(img => {
+                            html += '<img src="' + img.trim() + '" style="height:80px;border-radius:4px;flex-shrink:0;">';
+                        });
+                        html += '</div>';
                     }
                     
-                    html += '<div style="font-size:13px;color:#333;line-height:1.5;margin-bottom:6px;">' + story.review_text + '</div>' +
-                        '<div style="font-size:11px;color:#999;">' + new Date(story.created_at).toLocaleDateString() + '</div>' +
+                    html += '<div style="font-size:13px;color:#333;line-height:1.4;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">' + contentPreview + (contentPreview.length >= 100 ? '...' : '') + '</div>' +
+                        '<div style="font-size:11px;color:#999;margin-top:6px;">' + new Date(story.created_at).toLocaleDateString() + '</div>' +
                         '</div>';
                 });
             } else {
@@ -1909,7 +1917,6 @@
             
             // API로 전송
             try {
-                const imageData = selectedImages.length > 0 ? selectedImages[0] : null;
                 const token = localStorage.getItem('token');
                 const response = await fetch(`${API_BASE_URL}/api/reviews/add`, {
                     method: 'POST',
@@ -1921,7 +1928,7 @@
                         cafe_id: cafe.name,
                         rating: selectedRating,
                         content: review,
-                        image: imageData
+                        images: selectedImages
                     })
                 });
                 
