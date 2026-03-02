@@ -1407,7 +1407,8 @@
                     html += '<div onclick="showReviewDetail(' + story.id + ')" style="padding:12px;margin:8px 0;background:#fff;border:1px solid #e0e0e0;border-radius:8px;position:relative;max-height:200px;overflow:hidden;cursor:pointer;">';
                     
                     if (isMyStory) {
-                        html += '<div style="position:absolute;top:8px;right:8px;z-index:10;">' +
+                        html += '<div style="position:absolute;top:8px;right:8px;z-index:10;display:flex;gap:5px;">' +
+                            '<button onclick="event.stopPropagation();editStory(' + story.id + ')" style="padding:4px 8px;background:#2196F3;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">수정</button>' +
                             '<button onclick="event.stopPropagation();deleteStory(' + story.id + ',\'' + cafeName.replace(/'/g, "\\'") + '\')" style="padding:4px 8px;background:#f44336;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">삭제</button>' +
                             '</div>';
                     }
@@ -1488,6 +1489,43 @@
                 }
             } catch (err) {
                 alert('삭제 실패: ' + err.message);
+            }
+        }
+        
+        async function editStory(reviewId) {
+            const review = allStories.find(s => s.id === reviewId);
+            if (!review) return;
+            
+            const newRating = prompt('별점 (1-5):', review.rating);
+            if (!newRating || newRating < 1 || newRating > 5) return;
+            
+            const newContent = prompt('리뷰 내용:', review.content || review.review_text);
+            if (!newContent || !newContent.trim()) return;
+            
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE_URL}/api/reviews/update/${reviewId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        rating: parseInt(newRating),
+                        content: newContent
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('수정되었습니다.');
+                    localStorage.removeItem('stories_' + review.cafe_name);
+                    loadCafeStories(review.cafe_name);
+                    document.getElementById('reviewDetailModal').style.display = 'none';
+                } else {
+                    alert('수정 실패');
+                }
+            } catch (err) {
+                alert('수정 실패: ' + err.message);
             }
         }
         
