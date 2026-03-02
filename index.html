@@ -1,65 +1,19 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta name="google-site-verification" content="vGS8JFJQVv-de5om2knEDYC0ui0VSojWG5fVZZFj30o" />
-    <meta name="naver-site-verification" content="48957fb2a7409eca13cd790b2c03ce90cce6c1af" />
-    <title>카공맵 | 작업하기 좋은 카페 찾기 (콘센트/와이파이)</title>
+    <title>CoffeeMap - 카공 최적화 카페 찾기</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="네이버 블로그 리뷰 분석으로 찾는 카공 최적 카페. 콘센트, 와이파이, 소음 레벨, 작업 적합도를 한눈에 확인하세요.">
-    <meta name="keywords" content="카공, 카페 공부, 노트북 카페, 콘센트 많은 카페, 조용한 카페, 작업하기 좋은 카페, 스터디 카페">
+    <meta name="description" content="네이버 블로그 분석 기반 카공 최적화 카페 검색 서비스">
     <meta name="theme-color" content="#4CAF50">
-    <link rel="canonical" href="https://cagongmap.vercel.app">
-    
-    <!-- OG Tags -->
-    <meta property="og:title" content="카공맵 | 작업하기 좋은 카페 찾기">
-    <meta property="og:description" content="네이버 블로그 리뷰 분석으로 찾는 카공 최적 카페. 콘센트, 와이파이, 소음 레벨 확인">
-    <meta property="og:image" content="https://cagongmap.vercel.app/cagong1.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:url" content="https://cagongmap.vercel.app">
-    <meta property="og:type" content="website">
-    <meta property="og:locale" content="ko_KR">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="카공맵 | 작업하기 좋은 카페 찾기">
-    <meta name="twitter:description" content="네이버 블로그 리뷰 분석으로 찾는 카공 최적 카페">
-    <meta name="twitter:image" content="https://cagongmap.vercel.app/cagong1.png">
+    <link rel="icon" type="image/png" href="/logo.png">
     
     <!-- PWA -->
     <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="apple-touch-icon" href="/icon.svg">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="카공맵">
-    
-    <!-- Schema.org JSON-LD -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "카공맵",
-      "url": "https://cagongmap.vercel.app",
-      "description": "네이버 블로그 리뷰 분석 기반 카공 최적화 카페 검색 서비스",
-      "applicationCategory": "LifestyleApplication",
-      "operatingSystem": "Any",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "KRW"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.5",
-        "ratingCount": "100"
-      }
-    }
-    </script>
-    
-    <!-- Vercel Analytics -->
-    <script>
-      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-    </script>
-    <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+    <meta name="apple-mobile-web-app-title" content="CoffeeMap">
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -70,32 +24,6 @@
             overflow: hidden;
             position: fixed;
             font-family: sans-serif;
-        }
-        
-        /* 로딩 화면 */
-        #loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            transition: opacity 0.5s ease-out;
-        }
-        
-        #loading-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        #loading-screen img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
         }
         
         #map { 
@@ -416,6 +344,11 @@
             display: block;
         }
         
+        .marker-icon.liked::before {
+            content: '❤️';
+            font-size: 24px;
+        }
+        
         .marker-icon.green::before { color: #4CAF50; }
         .marker-icon.yellow::before { color: #FFC107; }
         .marker-icon.red::before { color: #F44336; }
@@ -423,6 +356,10 @@
         
         .marker-icon.active::before {
             color: white;
+        }
+        
+        .marker-icon.liked.active::before {
+            content: '❤️';
         }
         
         .marker-score {
@@ -454,189 +391,35 @@
         .marker-name.hidden {
             display: none;
         }
-        
-        /* PWA 설치 배너 */
-        #pwaInstallBanner {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-            color: white;
-            padding: 16px 20px;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
-            z-index: 9999;
-            display: none;
-            animation: slideUp 0.3s ease-out;
-        }
-        
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-        
-        #pwaInstallBanner .banner-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        #pwaInstallBanner .banner-text {
-            flex: 1;
-        }
-        
-        #pwaInstallBanner .banner-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        #pwaInstallBanner .banner-desc {
-            font-size: 13px;
-            opacity: 0.9;
-        }
-        
-        #pwaInstallBanner .banner-buttons {
-            display: flex;
-            gap: 10px;
-            margin-left: 15px;
-        }
-        
-        #pwaInstallBanner button {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        #pwaInstallBanner .install-btn {
-            background: white;
-            color: #4CAF50;
-        }
-        
-        #pwaInstallBanner .install-btn:hover {
-            transform: scale(1.05);
-        }
-        
-        #pwaInstallBanner .close-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
-        }
-        
-        /* iOS 설치 가이드 모달 */
-        #iosInstallModal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.8);
-            z-index: 10000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        #iosInstallModal .modal-content {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-        }
-        
-        #iosInstallModal .modal-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: #333;
-        }
-        
-        #iosInstallModal .modal-steps {
-            text-align: left;
-            margin: 20px 0;
-            line-height: 1.8;
-            color: #666;
-        }
-        
-        #iosInstallModal .modal-step {
-            margin: 12px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        #iosInstallModal .step-number {
-            background: #4CAF50;
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 600;
-            flex-shrink: 0;
-        }
-        
-        #iosInstallModal .modal-icon {
-            font-size: 40px;
-            margin: 10px 0;
-        }
-        
-        #iosInstallModal .modal-close {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 16px;
-        }
-        
-        @media (max-width: 768px) {
-            #pwaInstallBanner {
-                padding: 12px 16px;
-            }
-            
-            #pwaInstallBanner .banner-content {
-                flex-direction: column;
-                gap: 12px;
-            }
-            
-            #pwaInstallBanner .banner-buttons {
-                margin-left: 0;
-                width: 100%;
-            }
-            
-            #pwaInstallBanner button {
-                flex: 1;
-            }
-        }
     </style>
 </head>
 <body>
-    <!-- 로딩 화면 -->
-    <div id="loading-screen">
-        <img src="/cagong6.png" alt="CoffeeMap">
+    <!-- 로딩 스크린 -->
+    <div id="loadingScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999;">
+        <img src="logo.png" alt="카공맵" style="width: 200px; height: 200px; object-fit: contain; margin-bottom: 20px;">
+        <div style="font-size: 24px; font-weight: bold; color: #4CAF50; margin-bottom: 10px;">카공맵</div>
+        <div style="font-size: 14px; color: #666;">카페 정보를 불러오는 중...</div>
+        <div style="margin-top: 20px;">
+            <div style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #4CAF50; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        </div>
     </div>
-
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
     <!-- 구글맵 스타일 검색바 -->
     <div class="search-container">
         <div class="search-bar">
             <input type="text" id="topSearchInput" placeholder="Coffee" onkeyup="handleSearch(event)">
             <span class="close-btn" onclick="clearSearch()">✕</span>
         </div>
+    </div>
+    
+    <!-- 로그인 버튼 -->
+    <div style="position:fixed;top:20px;right:20px;z-index:1001;">
+        <button id="authBtn" onclick="showAuthModal()" style="padding:10px 20px;background:#4CAF50;color:white;border:none;border-radius:6px;cursor:pointer;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,0.15);">로그인</button>
     </div>
 
     <div class="sidebar" id="sidebar">
@@ -658,119 +441,129 @@
     </div>
     
     <div id="map"></div>
-    
-    <!-- 현재 위치 버튼 -->
-    <button id="currentLocationBtn" style="position:fixed;bottom:80px;right:20px;width:50px;height:50px;border-radius:50%;background:#fff;border:2px solid #ddd;box-shadow:0 2px 6px rgba(0,0,0,0.3);cursor:pointer;z-index:1000;display:flex;align-items:center;justify-content:center;transition:all 0.2s;">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M12 2v4m0 12v4M2 12h4m12 0h4"/>
-        </svg>
-    </button>
-    
-    <!-- 하단 네비게이션 -->
-    <div id="bottomNav" style="position:fixed;bottom:0;left:0;right:0;height:60px;background:#fff;border-top:1px solid #ddd;display:flex;justify-content:space-around;align-items:center;z-index:2000;box-shadow:0 -2px 10px rgba(0,0,0,0.1);">
-        <div class="nav-item" onclick="showPage('best')" style="flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer;padding:8px;">
-            <span style="font-size:20px;">🏆</span>
-            <span style="font-size:11px;margin-top:4px;">Best</span>
-        </div>
-        <div class="nav-item active" onclick="showPage('map')" style="flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer;padding:8px;">
-            <span style="font-size:20px;">🗺️</span>
-            <span style="font-size:11px;margin-top:4px;color:#4CAF50;font-weight:600;">맵</span>
-        </div>
-        <div class="nav-item" onclick="showPage('mypage')" style="flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer;padding:8px;">
-            <span style="font-size:20px;">👤</span>
-            <span style="font-size:11px;margin-top:4px;">내 페이지</span>
-        </div>
-    </div>
-    
-    <!-- Best 페이지 -->
-    <div id="bestPage" style="display:none;position:fixed;top:0;left:0;right:0;bottom:60px;background:#fff;z-index:1500;overflow-y:auto;padding:20px;">
-        <h2 style="margin:0 0 20px 0;">🏆 카공 Best 공간</h2>
-        <div id="bestList"></div>
-    </div>
-    
-    <!-- 포스팅 페이지 -->
-    <div id="postPage" style="display:none;position:fixed;top:0;left:0;right:0;bottom:60px;background:#fff;z-index:1500;overflow-y:auto;padding:20px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-            <h2 style="margin:0;">✍️ 카공 Story 작성</h2>
-            <button onclick="showPage('map')" style="background:none;border:none;font-size:32px;cursor:pointer;color:#999;line-height:1;padding:0;">×</button>
-        </div>
-        <div id="postContent"></div>
-    </div>
-    
-    <!-- 마이페이지 -->
-    <div id="myPage" style="display:none;position:fixed;top:0;left:0;right:0;bottom:60px;background:#fff;z-index:1500;overflow-y:auto;padding:20px;">
-        <h2 style="margin:0 0 20px 0;">👤 내 페이지</h2>
-        <div id="myPageContent"></div>
-    </div>
-    
-    <!-- PWA 설치 배너 -->
-    <div id="pwaInstallBanner">
-        <div class="banner-content">
-            <div class="banner-text">
-                <div class="banner-title">📱 앱으로 설치하기</div>
-                <div class="banner-desc">홈 화면에 추가하고 더 빠르게 이용하세요</div>
-            </div>
-            <div class="banner-buttons">
-                <button class="install-btn" onclick="handlePWAInstall()">설치</button>
-                <button class="close-btn" onclick="closePWABanner()">닫기</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- iOS 설치 가이드 모달 -->
-    <div id="iosInstallModal" onclick="closeIOSModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-title">앱 설치 방법 (iPhone)</div>
-            <div class="modal-icon">📲</div>
-            <div class="modal-steps">
-                <div class="modal-step">
-                    <div class="step-number">1</div>
-                    <div>하단의 <strong>공유</strong> 버튼을 누르세요</div>
-                </div>
-                <div class="modal-step">
-                    <div class="step-number">2</div>
-                    <div><strong>홈 화면에 추가</strong>를 선택하세요</div>
-                </div>
-                <div class="modal-step">
-                    <div class="step-number">3</div>
-                    <div>우측 상단 <strong>추가</strong>를 누르세요</div>
-                </div>
-            </div>
-            <button class="modal-close" onclick="closeIOSModal()">확인</button>
-        </div>
-    </div>
-    
-    <style>
-        #currentLocationBtn:hover {
-            background: #f5f5f5 !important;
-        }
-        
-        @media (max-width: 768px) {
-            #currentLocationBtn {
-                bottom: 100px;
-                right: 15px;
-                width: 45px;
-                height: 45px;
-            }
-        }
-    </style>
 
-    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=1b39ab278b34720c916eff1fe31ea422&libraries=services"></script>
+    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=297844bdfecc46774483cc747fc2bfe6&libraries=services"></script>
     <script>
         console.log('=== 스크립트 시작 ===');
-        
-        // API Base URL 설정
-        const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://138.2.127.70'
-            : '';
         
         let map, allCafes = [], markers = [], activeMarkerIdx = null;
         let currentSort = 'score-high';
         let userLocation = null;
-        let userMarker = null;
-        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
-        let posts = JSON.parse(localStorage.getItem('cagongPosts')) || [];
+        let userLikes = new Set(); // 사용자가 좋아요한 카페 ID 목록
+        
+        // 로그인 상태 확인 및 UI 업데이트
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const user = token ? JSON.parse(localStorage.getItem('user') || '{}') : null;
+            const authBtn = document.getElementById('authBtn');
+            
+            if (token && user) {
+                authBtn.textContent = user.nickname || user.email;
+                authBtn.onclick = showUserMenu;
+            } else {
+                authBtn.textContent = '로그인';
+                authBtn.onclick = showAuthModal;
+            }
+        }
+        
+        // 사용자 메뉴 표시
+        function showUserMenu() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const menuHtml = '<div onclick="this.remove()" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:3000;display:flex;align-items:center;justify-content:center;">' +
+                '<div onclick="event.stopPropagation()" style="background:white;padding:20px;border-radius:12px;min-width:200px;">' +
+                '<div style="font-weight:600;margin-bottom:15px;padding-bottom:10px;border-bottom:1px solid #eee;">' + user.nickname + '</div>' +
+                '<button onclick="logout();this.closest(\\'[style*=\\\\\\'position:fixed\\\\\\']\\').remove()" style="width:100%;padding:10px;background:#f44336;color:white;border:none;border-radius:6px;cursor:pointer;">로그아웃</button>' +
+                '</div></div>';
+            document.body.insertAdjacentHTML('beforeend', menuHtml);
+        }
+        
+        // 로그아웃
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            checkAuth();
+            alert('로그아웃되었습니다');
+        }
+        
+        // 로그인/회원가입 모달
+        function showAuthModal(isSignup = false) {
+            const modalHtml = '<div onclick="this.remove()" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px;">' +
+                '<div onclick="event.stopPropagation()" style="background:white;max-width:400px;width:100%;border-radius:12px;padding:30px;">' +
+                '<h3 style="margin-bottom:20px;">' + (isSignup ? '회원가입' : '로그인') + '</h3>' +
+                '<input id="auth-email" type="email" placeholder="이메일" style="width:100%;padding:12px;margin-bottom:10px;border:1px solid #ddd;border-radius:6px;">' +
+                '<input id="auth-password" type="password" placeholder="비밀번호" style="width:100%;padding:12px;margin-bottom:10px;border:1px solid #ddd;border-radius:6px;">' +
+                (isSignup ? '<input id="auth-nickname" type="text" placeholder="닉네임" style="width:100%;padding:12px;margin-bottom:10px;border:1px solid #ddd;border-radius:6px;">' : '') +
+                '<button onclick="' + (isSignup ? 'handleSignup' : 'handleLogin') + '()" style="width:100%;padding:12px;background:#4CAF50;color:white;border:none;border-radius:6px;cursor:pointer;margin-bottom:10px;">확인</button>' +
+                '<button onclick="showAuthModal(' + !isSignup + ')" style="width:100%;padding:12px;background:#2196F3;color:white;border:none;border-radius:6px;cursor:pointer;margin-bottom:10px;">' + (isSignup ? '로그인으로' : '회원가입으로') + '</button>' +
+                '<button onclick="this.closest(\\'[style*=\\\\\\'position:fixed\\\\\\']\\').remove()" style="width:100%;padding:12px;background:#999;color:white;border:none;border-radius:6px;cursor:pointer;">취소</button>' +
+                '</div></div>';
+            document.querySelectorAll('[style*="z-index:3000"]').forEach(el => el.remove());
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+        
+        // 로그인 처리
+        async function handleLogin() {
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            
+            if (!email || !password) {
+                alert('이메일과 비밀번호를 입력해주세요');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email, password})
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    document.querySelectorAll('[style*="z-index:3000"]').forEach(el => el.remove());
+                    checkAuth();
+                    alert('로그인 성공!');
+                } else {
+                    alert(data.error || '로그인 실패');
+                }
+            } catch (err) {
+                alert('로그인 실패: ' + err.message);
+            }
+        }
+        
+        // 회원가입 처리
+        async function handleSignup() {
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const nickname = document.getElementById('auth-nickname').value.trim();
+            
+            if (!email || !password || !nickname) {
+                alert('모든 항목을 입력해주세요');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email, password, nickname})
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('회원가입 성공! 로그인해주세요');
+                    showAuthModal(false);
+                } else {
+                    alert(data.error || '회원가입 실패');
+                }
+            } catch (err) {
+                alert('회원가입 실패: ' + err.message);
+            }
+        }
         
         // 검색 초기화
         function clearSearch() {
@@ -865,30 +658,24 @@
             });
         }
 
-        // Service Worker 강제 업데이트 및 캐시 삭제
+        // Service Worker 등록
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(registrations => {
-                registrations.forEach(reg => reg.unregister());
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('Service Worker 등록 성공:', reg.scope))
+                    .catch(err => console.log('Service Worker 등록 실패:', err));
             });
         }
-        
-        // 모든 localStorage 캐시 강제 삭제
-        (function() {
-            const keys = [];
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key && key.startsWith('cafe_')) {
-                    keys.push(key);
-                }
-            }
-            keys.forEach(key => localStorage.removeItem(key));
-            console.log(`전체 캐시 ${keys.length}개 삭제`);
-        })();
         
         window.addEventListener('load', function() {
             console.log('페이지 로드됨');
             if (typeof kakao !== 'undefined' && kakao.maps) {
                 kakao.maps.load(initMap);
+                // 로딩 스크린 숨기기
+                setTimeout(() => {
+                    const loadingScreen = document.getElementById("loadingScreen");
+                    if (loadingScreen) loadingScreen.style.display = "none";
+                }, 1000);
             } else {
                 console.error('카카오 맵 로드 실패');
             }
@@ -902,7 +689,6 @@
                             lng: position.coords.longitude
                         };
                         console.log('사용자 위치:', userLocation);
-                        showUserLocationMarker();
                     },
                     error => console.log('위치 권한 거부 또는 에러:', error)
                 );
@@ -939,7 +725,7 @@
         
         // 페이지 로드 시 구버전 캐시 삭제
         (function() {
-            const CACHE_VERSION = 'v20';
+            const CACHE_VERSION = 'v18';
             const keys = [];
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
@@ -963,11 +749,8 @@
             
             kakao.maps.event.addListener(map, 'idle', searchCafes);
             searchCafes();
-            
-            // 로딩 화면 숨기기 (2초 후)
-            setTimeout(() => {
-                document.getElementById('loading-screen').classList.add('hidden');
-            }, 2000);
+            loadUserLikes(); // 좋아요 목록 로드
+            checkAuth(); // 로그인 상태 확인
         }
         
         function searchCafes() {
@@ -1061,11 +844,11 @@
                 `;
             }).join('');
             
-            // 처음 렌더링할 때만 loadIndicators 호출 (순차 처리)
+            // 처음 렌더링할 때만 loadIndicators 호출
             if (cafes[0] && cafes[0].originalIdx === undefined) {
                 cafes.forEach((cafe, idx) => {
                     cafe.originalIdx = idx;
-                    setTimeout(() => loadIndicators(cafe, idx), idx * 100);
+                    loadIndicators(cafe, idx);
                 });
             }
         }
@@ -1172,10 +955,6 @@
                 return;
             }
             
-            // 지도 포커스
-            map.setCenter(new kakao.maps.LatLng(cafe.latitude, cafe.longitude));
-            map.setLevel(3);
-            
             // 이전 활성 마커 비활성화
             if (activeMarkerIdx !== null) {
                 const prevMarker = document.getElementById('marker-' + activeMarkerIdx);
@@ -1190,33 +969,17 @@
             showModal(cafe, cafe.detailData);
         }
         
-        // 현재 위치로 이동
-        document.getElementById('currentLocationBtn').addEventListener('click', () => {
-            if (!userLocation) {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        position => {
-                            userLocation = {
-                                lat: position.coords.latitude,
-                                lng: position.coords.longitude
-                            };
-                            map.setCenter(new kakao.maps.LatLng(userLocation.lat, userLocation.lng));
-                            map.setLevel(4);
-                            showUserLocationMarker();
-                        },
-                        () => alert('위치 권한이 필요합니다.')
-                    );
-                } else {
-                    alert('브라우저가 위치 서비스를 지원하지 않습니다.');
-                }
-            } else {
-                map.setCenter(new kakao.maps.LatLng(userLocation.lat, userLocation.lng));
-                map.setLevel(4);
-            }
-        });
-        
         function showModal(cafe, data) {
-            let html = '<h2 style="margin-bottom:20px;">' + cafe.name + '</h2>';
+            const isLiked = userLikes.has(cafe.name);
+            const likeIcon = isLiked ? '❤️' : '🤍';
+            
+            let html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">';
+            html += '<h2 style="margin:0;">' + cafe.name + '</h2>';
+            html += '<button onclick="toggleLike(\'' + cafe.name.replace(/'/g, "\\'") + '\',\'' + 
+                    cafe.address.replace(/'/g, "\\'") + '\',' + cafe.latitude + ',' + cafe.longitude + 
+                    ');event.stopPropagation();" style="background:none;border:none;font-size:32px;cursor:pointer;padding:0;line-height:1;" title="좋아요">' + 
+                    likeIcon + '</button>';
+            html += '</div>';
             
             // 카공 지표 카드
             html += '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0;">';
@@ -1280,49 +1043,8 @@
                 html += '</div></div>';
             }
             
-            // 카공 Story 섹션 (블로그 리뷰 위로 이동)
-            const cafeStories = posts.filter(p => p.cafe === cafe.name);
-            html += '<div style="margin-top:20px;">';
-            html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">';
-            html += '<h3 style="font-size:14px;margin:0;">💬 카공 Story (' + cafeStories.length + ')</h3>';
-            html += '<button onclick="event.stopPropagation();writeStoryForCafe(this.dataset.cafe)" data-cafe="' + cafe.name.replace(/"/g, '&quot;') + '" style="padding:6px 12px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;">Story 작성</button>';
-            html += '</div>';
-            
-            if (cafeStories.length > 0) {
-                cafeStories.forEach(function(story) {
-                    html += '<div style="padding:12px;margin:8px 0;background:#f0f8ff;border-radius:8px;border-left:3px solid #2196F3;">' +
-                        '<div style="display:flex;justify-content:space-between;margin-bottom:6px;">' +
-                        '<span style="font-weight:600;font-size:13px;">' + story.author + '</span>' +
-                        '<span style="font-size:12px;">' + '⭐'.repeat(story.rating) + '</span>' +
-                        '</div>' +
-                        '<div style="font-size:13px;color:#333;line-height:1.5;margin-bottom:6px;">' + story.review + '</div>' +
-                        '<div style="font-size:11px;color:#999;">' + story.date + '</div>' +
-                        '</div>';
-                });
-            } else {
-                html += '<div style="text-align:center;padding:20px;color:#999;background:#f9f9f9;border-radius:8px;">아직 작성된 Story가 없습니다.<br>첫 번째 Story를 작성해보세요!</div>';
-            }
-            html += '</div>';
-            
-            // 카페 이미지 갤러리 (Object Storage)
-            if (data.images && data.images.length > 0) {
-                html += '<div style="margin-top:20px;"><h3 style="font-size:14px;margin-bottom:10px;">📷 카페 사진 (' + data.images.length + ')</h3>';
-                html += '<div style="display:flex;gap:8px;overflow-x:auto;padding:4px 0;">';
-                data.images.forEach(function(imgUrl, idx) {
-                    const blogItem = data.blogItems && data.blogItems[idx] ? data.blogItems[idx] : null;
-                    const blogUrl = blogItem ? blogItem.url : '#';
-                    const blogTitle = blogItem ? blogItem.title.replace(/<[^>]*>/g, '').substring(0, 15) + '...' : '블로그';
-                    html += '<div style="position:relative;flex-shrink:0;">' +
-                        '<a href="' + blogUrl + '" target="_blank">' +
-                        '<img src="' + imgUrl + '" style="height:120px;border-radius:8px;cursor:pointer;object-fit:cover;display:block;">' +
-                        '</a>' +
-                        '<a href="' + blogUrl + '" target="_blank" style="position:absolute;bottom:4px;right:4px;font-size:9px;background:rgba(0,0,0,0.7);color:#fff;padding:2px 5px;border-radius:3px;text-decoration:none;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">📝 ' + blogTitle + '</a>' +
-                        '</div>';
-                });
-                html += '</div>';
-                html += '<div style="font-size:10px;color:#999;margin-top:8px;">이미지 클릭 시 원본 블로그로 이동 | <a href="mailto:eungyo0965@gmail.com?subject=카공맵 이미지 신고/삭제 요청" style="color:#999;text-decoration:underline;">신고/삭제 요청</a></div>';
-                html += '</div>';
-            }
+            // 사용자 리뷰
+            html += '<div id="user-reviews-' + data.name + '" style="margin-top:20px;"></div>';
             
             // 블로그 리뷰
             if (data.blogItems && data.blogItems.length > 0) {
@@ -1346,13 +1068,15 @@
             const modal = document.createElement('div');
             modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;';
             modal.innerHTML = '<div style="background:white;max-width:600px;max-height:80vh;overflow-y:auto;border-radius:12px;padding:30px;position:relative;width:100%;">' +
-                '<button onclick="alert(\'좋아요 기능은 로그인 후 사용 가능합니다\');event.stopPropagation();" style="position:absolute;top:18px;right:60px;background:none;border:none;font-size:28px;cursor:pointer;padding:0;line-height:1;display:flex;align-items:center;" title="좋아요">🤍</button>' +
                 '<span style="position:absolute;top:15px;right:20px;font-size:32px;cursor:pointer;color:#999;line-height:1;" onclick="this.parentElement.parentElement.remove()">×</span>' +
                 html + '</div>';
             modal.onclick = function(e) { 
                 if (e.target === modal) modal.remove(); 
             };
             document.body.appendChild(modal);
+            
+            // 사용자 리뷰 로드
+            loadUserReviews(data.name);
         }
         
         function displayMarkers(cafes) {
@@ -1397,30 +1121,6 @@
                     }
                 };
             });
-            
-            // 사용자 위치 마커 다시 표시
-            showUserLocationMarker();
-        }
-        
-        function showUserLocationMarker() {
-            if (!userLocation) return;
-            
-            // 기존 사용자 마커 제거
-            if (userMarker) {
-                userMarker.setMap(null);
-            }
-            
-            // 사용자 위치 마커 생성
-            const userContent = document.createElement('div');
-            userContent.style.cssText = 'width: 20px; height: 20px; background: #4285F4; border: 3px solid white; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.3); z-index: 1000;';
-            
-            userMarker = new kakao.maps.CustomOverlay({
-                position: new kakao.maps.LatLng(userLocation.lat, userLocation.lng),
-                content: userContent,
-                zIndex: 1000
-            });
-            
-            userMarker.setMap(map);
         }
         
         function updateMarker(idx, data) {
@@ -1428,12 +1128,18 @@
             if (markerIcon && data) {
                 const oldColor = markerIcon.className.split(' ')[1];
                 const newColor = data.signalColor || 'gray';
+                const cafe = allCafes[idx];
                 
                 // 0.0점이면 no-score 클래스 추가
                 if (data.totalScore === 0) {
                     markerIcon.className = 'marker-icon no-score';
                 } else {
                     markerIcon.className = 'marker-icon ' + newColor;
+                }
+                
+                // 좋아요 상태 반영
+                if (cafe && userLikes.has(cafe.name)) {
+                    markerIcon.classList.add('liked');
                 }
                 
                 // z-index 업데이트
@@ -1461,10 +1167,10 @@
             }
         }
         
-        async function loadIndicators(cafe, idx, retryCount = 0) {
+        async function loadIndicators(cafe, idx) {
             try {
                 // localStorage 캐시 확인 (버전 포함)
-                const CACHE_VERSION = 'v20';  // OCI 이미지 URL 적용
+                const CACHE_VERSION = 'v18';
                 const cacheKey = `cafe_${CACHE_VERSION}_${cafe.name}_${cafe.address}`;
                 const cached = localStorage.getItem(cacheKey);
                 
@@ -1481,16 +1187,11 @@
                 // 캐시가 없거나 만료되면 API 호출
                 if (!data) {
                     console.log('API 호출:', cafe.name);
-                    const response = await fetch(`${API_BASE_URL}/api/blog-search`, {
+                    const response = await fetch('https://web-production-c8796.up.railway.app/api/blog-search', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ name: cafe.name, address: cafe.address })
                     });
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
-                    
                     data = await response.json();
                     
                     // localStorage에 캐시 저장
@@ -1542,12 +1243,6 @@
                 }
             } catch (err) {
                 console.log('지표 로드 실패:', cafe.name, err);
-                
-                // 재시도 로직 (최대 3번)
-                if (retryCount < 3) {
-                    console.log(`재시도 ${retryCount + 1}/3:`, cafe.name);
-                    setTimeout(() => loadIndicators(cafe, idx, retryCount + 1), 2000 * (retryCount + 1));
-                }
             }
         }
         
@@ -1589,540 +1284,264 @@
             }).join('');
         }
         
-        // PWA 설치 관련 코드
-        let deferredPrompt;
-        const pwaInstallBanner = document.getElementById('pwaInstallBanner');
-        const iosInstallModal = document.getElementById('iosInstallModal');
-        
-        // 이미 설치되었거나 배너를 닫은 경우 체크
-        const isPWAInstalled = window.matchMedia('(display-mode: standalone)').matches || 
-                               window.navigator.standalone === true;
-        const bannerDismissed = localStorage.getItem('pwaBannerDismissed');
-        
-        // BeforeInstallPrompt 이벤트 캐치 (Android)
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
+        // 좋아요 목록 로드
+        async function loadUserLikes() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
             
-            // 배너를 닫지 않았고 설치되지 않았으면 3초 후 배너 표시
-            if (!isPWAInstalled && !bannerDismissed) {
-                setTimeout(() => {
-                    pwaInstallBanner.style.display = 'block';
-                }, 3000);
-            }
-        });
-        
-        // iOS 감지 및 배너 표시
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        if (isIOS && !isPWAInstalled && !bannerDismissed) {
-            setTimeout(() => {
-                pwaInstallBanner.style.display = 'block';
-            }, 3000);
-        }
-        
-        // 설치 버튼 클릭
-        function handlePWAInstall() {
-            if (isIOS) {
-                // iOS는 가이드 모달 표시
-                iosInstallModal.style.display = 'flex';
-                pwaInstallBanner.style.display = 'none';
-            } else if (deferredPrompt) {
-                // Android는 설치 프롬프트 표시
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('PWA 설치 완료');
-                    }
-                    deferredPrompt = null;
-                    pwaInstallBanner.style.display = 'none';
+            try {
+                const response = await fetch('/api/likes/my', {
+                    headers: { 'Authorization': 'Bearer ' + token }
                 });
-            }
-        }
-        
-        // 배너 닫기
-        function closePWABanner() {
-            pwaInstallBanner.style.display = 'none';
-            // localStorage 저장 제거 - 다음에도 배너 표시
-        }
-        
-        // iOS 모달 닫기
-        function closeIOSModal() {
-            iosInstallModal.style.display = 'none';
-        }
-        
-        // 설치 완료 감지
-        window.addEventListener('appinstalled', () => {
-            console.log('PWA 설치 완료');
-            pwaInstallBanner.style.display = 'none';
-            // 설치 완료 시에만 localStorage 저장
-            localStorage.setItem('pwaBannerDismissed', 'true');
-        });
-        
-        // ===== 새로운 기능: 페이지 전환 =====
-        function showPage(page) {
-            // 모든 페이지 숨기기
-            document.getElementById('bestPage').style.display = 'none';
-            document.getElementById('postPage').style.display = 'none';
-            document.getElementById('myPage').style.display = 'none';
-            document.getElementById('map').style.display = 'none';
-            document.getElementById('sidebar').style.display = 'none';
-            document.querySelector('.search-container').style.display = 'none';
-            
-            // 하단 네비게이션 바는 항상 표시
-            const bottomNav = document.getElementById('bottomNav');
-            if (bottomNav) bottomNav.style.display = 'flex';
-            
-            // 네비게이션 활성화 상태 변경
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.querySelector('span:last-child').style.color = '#666';
-                item.querySelector('span:last-child').style.fontWeight = '400';
-            });
-            
-            if (page === 'map') {
-                document.getElementById('map').style.display = 'block';
-                document.getElementById('sidebar').style.display = 'block';
-                document.querySelector('.search-container').style.display = 'block';
-                document.querySelectorAll('.nav-item')[1].querySelector('span:last-child').style.color = '#4CAF50';
-                document.querySelectorAll('.nav-item')[1].querySelector('span:last-child').style.fontWeight = '600';
-            } else if (page === 'best') {
-                document.getElementById('bestPage').style.display = 'block';
-                loadBestCafes();
-                document.querySelectorAll('.nav-item')[0].querySelector('span:last-child').style.color = '#4CAF50';
-                document.querySelectorAll('.nav-item')[0].querySelector('span:last-child').style.fontWeight = '600';
-            } else if (page === 'post') {
-                if (!currentUser) {
-                    showLoginPrompt('post');
-                    return;
+                if (response.ok) {
+                    const data = await response.json();
+                    userLikes = new Set(data.likes.map(like => like.cafe_name));
+                    updateAllMarkers();
                 }
-                document.getElementById('postPage').style.display = 'block';
-                loadPostPage();
-            } else if (page === 'mypage') {
-                document.getElementById('myPage').style.display = 'block';
-                loadMyPage();
-                document.querySelectorAll('.nav-item')[2].querySelector('span:last-child').style.color = '#4CAF50';
-                document.querySelectorAll('.nav-item')[2].querySelector('span:last-child').style.fontWeight = '600';
+            } catch (err) {
+                console.log('좋아요 목록 로드 실패:', err);
             }
         }
         
-        // Best 카페 로드
-        function loadBestCafes() {
-            const sorted = [...allCafes].sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0)).slice(0, 20);
-            const html = sorted.map((cafe, idx) => `
-                <div style="border:1px solid #ddd;border-radius:8px;padding:15px;margin-bottom:15px;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-                        <div style="font-weight:600;font-size:16px;">${idx + 1}. ${cafe.name}</div>
-                        <div style="background:#4CAF50;color:white;padding:4px 12px;border-radius:12px;font-size:14px;font-weight:600;">
-                            ${cafe.totalScore ? cafe.totalScore.toFixed(1) : '-'}
-                        </div>
-                    </div>
-                    <div style="font-size:13px;color:#666;margin-bottom:8px;">${cafe.address}</div>
-                    ${cafe.detailData ? `
-                        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
-                            <span style="background:#f0f0f0;padding:4px 8px;border-radius:4px;font-size:12px;">⚡ ${cafe.detailData.outletLevel}</span>
-                            <span style="background:#f0f0f0;padding:4px 8px;border-radius:4px;font-size:12px;">📶 ${cafe.detailData.hasWifi ? 'WiFi' : 'WiFi 정보 없음'}</span>
-                            <span style="background:#f0f0f0;padding:4px 8px;border-radius:4px;font-size:12px;">🔇 ${cafe.detailData.noiseLevel}</span>
-                        </div>
-                    ` : ''}
-                </div>
-            `).join('');
-            document.getElementById('bestList').innerHTML = html || '<p style="text-align:center;color:#999;padding:40px 0;">데이터 로딩 중...</p>';
+        // 좋아요 토글
+        async function toggleLike(cafeName, cafeAddress, cafeLat, cafeLng) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('로그인이 필요합니다');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/likes/toggle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({
+                        cafe_id: cafeName,
+                        cafe_name: cafeName,
+                        cafe_address: cafeAddress,
+                        cafe_lat: cafeLat,
+                        cafe_lng: cafeLng
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.liked) {
+                        userLikes.add(cafeName);
+                    } else {
+                        userLikes.delete(cafeName);
+                    }
+                    updateAllMarkers();
+                    
+                    // 모달이 열려있으면 다시 렌더링
+                    const cafe = allCafes.find(c => c.name === cafeName);
+                    if (cafe && cafe.detailData) {
+                        document.querySelectorAll('[style*="position:fixed"]').forEach(el => el.remove());
+                        showModal(cafe, cafe.detailData);
+                    }
+                }
+            } catch (err) {
+                console.log('좋아요 토글 실패:', err);
+            }
         }
         
-        // 포스팅 페이지 로드
-        let selectedImages = [];
+        // 모든 마커 업데이트
+        function updateAllMarkers() {
+            allCafes.forEach((cafe, idx) => {
+                const markerIcon = document.getElementById('marker-' + idx);
+                if (markerIcon) {
+                    if (userLikes.has(cafe.name)) {
+                        markerIcon.classList.add('liked');
+                    } else {
+                        markerIcon.classList.remove('liked');
+                    }
+                }
+            });
+        }
         
-        function loadPostPage() {
-            selectedImages = [];
-            document.getElementById('postContent').innerHTML = `
-                <div style="margin-bottom:20px;">
-                    <label style="display:block;margin-bottom:8px;font-weight:600;">카페 선택</label>
-                    <select id="postCafe" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;">
-                        <option value="">카페를 선택하세요</option>
-                        ${allCafes.map((c, i) => `<option value="${i}">${c.name}</option>`).join('')}
-                    </select>
-                </div>
-                <div style="margin-bottom:20px;">
-                    <label style="display:block;margin-bottom:8px;font-weight:600;">평점</label>
-                    <div style="display:flex;gap:10px;">
-                        ${[1,2,3,4,5].map(n => `<button onclick="selectRating(${n})" id="rating${n}" style="padding:10px 20px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;">⭐ ${n}</button>`).join('')}
-                    </div>
-                </div>
-                <div style="margin-bottom:20px;">
-                    <label style="display:block;margin-bottom:8px;font-weight:600;">사진 첨부 (최대 5장)</label>
-                    <input type="file" id="postImage" accept="image/*" multiple style="width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;">
-                    <div id="imagePreview" style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;"></div>
-                </div>
-                <div style="margin-bottom:20px;">
-                    <label style="display:block;margin-bottom:8px;font-weight:600;">리뷰</label>
-                    <textarea id="postReview" placeholder="카공 경험을 공유해주세요..." style="width:100%;height:150px;padding:10px;border:1px solid #ddd;border-radius:4px;resize:vertical;"></textarea>
-                </div>
-                <button onclick="submitPost()" style="width:100%;padding:15px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:16px;font-weight:600;cursor:pointer;">작성 완료</button>
+        // 사용자 리뷰 로드
+        async function loadUserReviews(cafeId) {
+            const container = document.getElementById('user-reviews-' + cafeId);
+            if (!container) return;
+            
+            try {
+                const response = await fetch('/api/reviews/cafe/' + encodeURIComponent(cafeId));
+                const reviews = await response.json();
+                const token = localStorage.getItem('token');
+                const user = token ? JSON.parse(localStorage.getItem('user') || '{}') : null;
                 
-                <h3 style="margin:40px 0 20px 0;padding-top:20px;border-top:1px solid #ddd;">📝 카공 Story</h3>
-                <div id="storyList"></div>
-            `;
+                console.log('리뷰 로드:', {cafeId, reviewCount: reviews.length, user});
+                
+                let html = '<div style="border-top:1px solid #e0e0e0;padding-top:20px;"><h3 style="font-size:14px;margin-bottom:10px;">📸 카공 Story (' + reviews.length + ')</h3>';
+                
+                if (token) {
+                    html += '<button onclick="showReviewForm(\'' + cafeId.replace(/'/g, "\\'") + '\')" style="width:100%;padding:10px;background:#4CAF50;color:white;border:none;border-radius:6px;cursor:pointer;margin-bottom:15px;">📝 카공 Story 작성</button>';
+                }
+                
+                reviews.forEach(r => {
+                    const isOwner = user && (user.user_id === r.user_id || user.id === r.user_id);
+                    console.log('리뷰 체크:', {reviewId: r.id, reviewUserId: r.user_id, currentUserId: user?.user_id, currentUserIdAlt: user?.id, isOwner});
+                    
+                    html += '<div style="padding:12px;margin:8px 0;background:#f9f9f9;border-radius:8px;">' +
+                        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
+                        '<div><span style="font-weight:600;font-size:13px;">' + r.nickname + '</span> ' +
+                        '<span style="color:#FFB300;">' + '★'.repeat(r.rating) + '☆'.repeat(5-r.rating) + '</span></div>' +
+                        '<span style="font-size:11px;color:#999;">' + new Date(r.created_at).toLocaleDateString() + '</span>' +
+                        '</div>';
+                    
+                    // 이미지 표시
+                    if (r.image_url) {
+                        html += '<div style="margin-bottom:10px;"><img src="' + r.image_url + '" style="max-width:100%;border-radius:6px;"></div>';
+                    }
+                    
+                    html += '<div style="font-size:13px;color:#333;line-height:1.5;">' + r.content + '</div>';
+                    
+                    if (isOwner) {
+                        html += '<div style="margin-top:8px;display:flex;gap:8px;">' +
+                            '<button onclick="editReview(' + r.id + ',this.dataset.cafe,' + r.rating + ',this.dataset.content,this.dataset.image)" data-cafe="' + cafeId.replace(/"/g, '&quot;') + '" data-content="' + r.content.replace(/"/g, '&quot;') + '" data-image="' + (r.image_url || '') + '" style="padding:4px 12px;background:#2196F3;color:white;border:none;border-radius:4px;cursor:pointer;font-size:12px;">수정</button>' +
+                            '<button onclick="deleteReview(' + r.id + ',this.dataset.cafe)" data-cafe="' + cafeId.replace(/"/g, '&quot;') + '" style="padding:4px 12px;background:#f44336;color:white;border:none;border-radius:4px;cursor:pointer;font-size:12px;">삭제</button>' +
+                            '</div>';
+                    }
+                    
+                    html += '</div>';
+                });
+                
+                if (reviews.length === 0) {
+                    html += '<div style="text-align:center;padding:20px;color:#999;">첫 Story를 작성해보세요!</div>';
+                }
+                
+                html += '</div>';
+                container.innerHTML = html;
+            } catch (err) {
+                console.log('리뷰 로드 실패:', err);
+            }
+        }
+        
+        // 리뷰 작성 폼
+        function showReviewForm(cafeId, editId = null, editRating = 5, editContent = '', editImageUrl = '') {
+            const formHtml = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px;">' +
+                '<div style="background:white;max-width:500px;width:100%;border-radius:12px;padding:30px;max-height:80vh;overflow-y:auto;">' +
+                '<h3 style="margin-bottom:20px;">' + (editId ? 'Story 수정' : 'Story 작성') + '</h3>' +
+                '<div style="margin-bottom:15px;">' +
+                '<label style="display:block;margin-bottom:8px;font-weight:600;">평점</label>' +
+                '<select id="review-rating" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;">' +
+                '<option value="5"' + (editRating === 5 ? ' selected' : '') + '>⭐⭐⭐⭐⭐ 최고예요</option>' +
+                '<option value="4"' + (editRating === 4 ? ' selected' : '') + '>⭐⭐⭐⭐ 좋아요</option>' +
+                '<option value="3"' + (editRating === 3 ? ' selected' : '') + '>⭐⭐⭐ 보통이에요</option>' +
+                '<option value="2"' + (editRating === 2 ? ' selected' : '') + '>⭐⭐ 별로예요</option>' +
+                '<option value="1"' + (editRating === 1 ? ' selected' : '') + '>⭐ 최악이에요</option>' +
+                '</select></div>' +
+                '<div style="margin-bottom:15px;">' +
+                '<label style="display:block;margin-bottom:8px;font-weight:600;">내용</label>' +
+                '<textarea id="review-content" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;min-height:100px;resize:vertical;">' + editContent + '</textarea>' +
+                '</div>' +
+                '<div style="margin-bottom:15px;">' +
+                '<label style="display:block;margin-bottom:8px;font-weight:600;">사진 (선택)</label>' +
+                '<input type="file" id="review-image" accept="image/*" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;">' +
+                (editImageUrl ? '<div style="margin-top:10px;"><img src="' + editImageUrl + '" style="max-width:100%;border-radius:6px;"><div style="font-size:12px;color:#666;margin-top:5px;">기존 이미지 (새 이미지 선택 시 교체됩니다)</div></div>' : '') +
+                '<div id="image-preview" style="margin-top:10px;"></div>' +
+                '</div>' +
+                '<div style="display:flex;gap:10px;">' +
+                '<button onclick="submitReview(\'' + cafeId + '\',' + editId + ',\'' + editImageUrl + '\')" style="flex:1;padding:12px;background:#4CAF50;color:white;border:none;border-radius:6px;cursor:pointer;">저장</button>' +
+                '<button onclick="this.closest(\'[style*=\\\'position:fixed\\\']\').remove()" style="flex:1;padding:12px;background:#999;color:white;border:none;border-radius:6px;cursor:pointer;">취소</button>' +
+                '</div></div></div>';
+            
+            document.body.insertAdjacentHTML('beforeend', formHtml);
             
             // 이미지 미리보기
-            document.getElementById('postImage').addEventListener('change', function(e) {
-                const files = Array.from(e.target.files).slice(0, 5);
-                selectedImages = [];
-                document.getElementById('imagePreview').innerHTML = '';
-                
-                files.forEach((file, idx) => {
+            document.getElementById('review-image').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
-                        selectedImages.push(e.target.result);
-                        const imgDiv = document.createElement('div');
-                        imgDiv.style.cssText = 'position:relative;';
-                        imgDiv.innerHTML = 
-                            '<img src="' + e.target.result + '" style="width:100px;height:100px;object-fit:cover;border-radius:8px;">' +
-                            '<button onclick="removeImage(' + idx + ')" style="position:absolute;top:-5px;right:-5px;background:red;color:white;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;line-height:1;">×</button>';
-                        document.getElementById('imagePreview').appendChild(imgDiv);
+                        document.getElementById('image-preview').innerHTML = 
+                            '<img src="' + e.target.result + '" style="max-width:100%;border-radius:6px;">';
                     };
                     reader.readAsDataURL(file);
+                }
+            });
+        }
+        
+        // 리뷰 제출
+        async function submitReview(cafeId, editId = null, existingImageUrl = '') {
+            const rating = document.getElementById('review-rating').value;
+            const content = document.getElementById('review-content').value.trim();
+            const imageFile = document.getElementById('review-image').files[0];
+            const token = localStorage.getItem('token');
+            
+            if (!content) {
+                alert('리뷰 내용을 입력해주세요');
+                return;
+            }
+            
+            try {
+                const payload = {
+                    cafe_id: cafeId,
+                    rating: parseInt(rating),
+                    content: content,
+                    image_url: existingImageUrl
+                };
+                
+                // 이미지 파일이 있으면 base64로 변환
+                if (imageFile) {
+                    const reader = new FileReader();
+                    const imageBase64 = await new Promise((resolve) => {
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.readAsDataURL(imageFile);
+                    });
+                    payload.image = imageBase64;
+                }
+                
+                const url = editId ? '/api/reviews/update/' + editId : '/api/reviews/add';
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(payload)
                 });
-            });
-            
-            loadStories();
-        }
-        
-        function removeImage(idx) {
-            selectedImages.splice(idx, 1);
-            loadPostPage();
-            setTimeout(() => {
-                const cafeSelect = document.getElementById('postCafe');
-                if (cafeSelect && cafeSelect.value) {
-                    // 카페 선택 유지
-                }
-            }, 100);
-        }
-        
-        let selectedRating = 0;
-        function selectRating(n) {
-            selectedRating = n;
-            [1,2,3,4,5].forEach(i => {
-                const btn = document.getElementById('rating' + i);
-                if (btn) btn.style.background = i <= n ? '#4CAF50' : '#fff';
-                if (btn) btn.style.color = i <= n ? 'white' : '#333';
-            });
-        }
-        
-        function submitPost() {
-            const cafeIdx = document.getElementById('postCafe').value;
-            const review = document.getElementById('postReview').value;
-            
-            if (!cafeIdx || !selectedRating || !review.trim()) {
-                alert('모든 항목을 입력해주세요.');
-                return;
-            }
-            
-            const post = {
-                id: Date.now(),
-                cafe: allCafes[cafeIdx].name,
-                rating: selectedRating,
-                review: review,
-                author: currentUser.name,
-                date: new Date().toLocaleDateString('ko-KR'),
-                images: selectedImages.length > 0 ? selectedImages : []
-            };
-            
-            posts.unshift(post);
-            localStorage.setItem('cagongPosts', JSON.stringify(posts));
-            alert('작성 완료!');
-            showPage('map');
-        }
-        
-        function loadStories() {
-            const html = posts.map(p => {
-                const images = p.images || (p.image ? [p.image] : []);
-                const reviewPreview = p.review.length > 60 ? p.review.substring(0, 60) + '...' : p.review;
                 
-                const isMyPost = currentUser && (p.author === currentUser.name || p.author === currentUser.id);
-                
-                let buttonsHtml = '';
-                if (isMyPost) {
-                    buttonsHtml = '<div style="position:absolute;top:10px;right:10px;display:flex;gap:5px;z-index:10;">' +
-                        '<button onclick="event.stopPropagation();deletePost(' + p.id + ')" style="padding:8px 12px;background:#f44336;color:white;border:none;border-radius:4px;font-size:13px;cursor:pointer;font-weight:600;">삭제</button>' +
-                        '</div>';
+                if (response.ok) {
+                    document.querySelectorAll('[style*="z-index:3000"]').forEach(el => el.remove());
+                    loadUserReviews(cafeId);
+                } else {
+                    alert('리뷰 저장 실패');
                 }
-                
-                let imagesHtml = '';
-                if (images.length > 0) {
-                    imagesHtml = '<div style="display:flex;gap:5px;overflow-x:auto;margin-bottom:10px;">' + 
-                        images.map(img => '<img src="' + img + '" style="height:80px;border-radius:4px;flex-shrink:0;">').join('') + 
-                        '</div>';
-                }
-                
-                return `
-                <div style="border:1px solid #ddd;border-radius:8px;padding:15px;margin-bottom:15px;position:relative;">
-                    ${buttonsHtml}
-                    <div onclick="showStoryDetail(${p.id})" style="cursor:pointer;">
-                        <div style="display:flex;justify-content:space-between;margin-bottom:10px;padding-right:${isMyPost ? '100px' : '0'};">
-                            <div style="font-weight:600;">${p.cafe}</div>
-                            <div>${'⭐'.repeat(p.rating)}</div>
-                        </div>
-                        ${imagesHtml}
-                        <div style="font-size:14px;color:#333;margin-bottom:8px;line-height:1.5;">${reviewPreview}</div>
-                        <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <div style="font-size:12px;color:#999;">${p.author} · ${p.date}</div>
-                            ${images.length > 0 ? '<div style="font-size:12px;color:#666;">📷 ' + images.length + '장</div>' : ''}
-                        </div>
-                    </div>
-                </div>
-            `;
-            }).join('');
-            const target = document.getElementById('storyList');
-            if (target) target.innerHTML = html || '<p style="text-align:center;color:#999;padding:20px 0;">아직 작성된 Story가 없습니다.</p>';
-        }
-        
-        function deletePost(postId) {
-            if (!confirm('정말 삭제하시겠습니까?')) return;
-            
-            const index = posts.findIndex(p => p.id === postId);
-            if (index !== -1) {
-                posts.splice(index, 1);
-                localStorage.setItem('cagongPosts', JSON.stringify(posts));
-                loadStories();
+            } catch (err) {
+                alert('리뷰 저장 실패: ' + err.message);
             }
         }
         
-        function editPost(postId) {
-            alert('수정 기능은 준비 중입니다.');
+        // 리뷰 수정
+        function editReview(reviewId, cafeId, rating, content, imageUrl) {
+            showReviewForm(cafeId, reviewId, rating, content, imageUrl);
         }
         
-        function showStoryDetail(postId) {
-            const post = posts.find(p => p.id === postId);
-            if (!post) return;
+        // 리뷰 삭제
+        async function deleteReview(reviewId, cafeId) {
+            if (!confirm('리뷰를 삭제하시겠습니까?')) return;
             
-            const images = post.images || (post.image ? [post.image] : []);
-            const imagesHtml = images.map(img => 
-                '<img src="' + img + '" style="width:100%;max-height:300px;object-fit:contain;border-radius:8px;margin-bottom:10px;">'
-            ).join('');
-            
-            const modal = document.createElement('div');
-            modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px;';
-            modal.innerHTML = '<div style="background:white;max-width:600px;max-height:80vh;overflow-y:auto;border-radius:12px;padding:30px;position:relative;width:100%;">' +
-                '<span style="position:absolute;top:15px;right:20px;font-size:32px;cursor:pointer;color:#999;line-height:1;" onclick="this.parentElement.parentElement.remove()">×</span>' +
-                '<h3 style="margin:0 0 15px 0;">' + post.cafe + '</h3>' +
-                '<div style="margin-bottom:15px;">' + '⭐'.repeat(post.rating) + '</div>' +
-                imagesHtml +
-                '<div style="font-size:14px;color:#333;line-height:1.6;margin-bottom:15px;white-space:pre-wrap;">' + post.review + '</div>' +
-                '<div style="font-size:12px;color:#999;">' + post.author + ' · ' + post.date + '</div>' +
-                '</div>';
-            modal.onclick = function(e) { 
-                if (e.target === modal) modal.remove(); 
-            };
-            document.body.appendChild(modal);
-        }
-        
-        // 마이페이지 로드
-        function loadMyPage() {
-            if (!currentUser) {
-                document.getElementById('myPageContent').innerHTML = `
-                    <div style="text-align:center;padding:40px 20px;">
-                        <div style="font-size:48px;margin-bottom:20px;">👤</div>
-                        <p style="color:#666;margin-bottom:30px;">로그인하고 나만의 카공 Story를 작성해보세요!</p>
-                        
-                        <div style="max-width:400px;margin:0 auto;">
-                            <div style="margin-bottom:15px;">
-                                <input type="text" id="loginId" placeholder="아이디" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:4px;font-size:14px;box-sizing:border-box;">
-                            </div>
-                            <div style="margin-bottom:15px;">
-                                <input type="password" id="loginPw" placeholder="비밀번호" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:4px;font-size:14px;box-sizing:border-box;">
-                            </div>
-                            <button onclick="login()" style="width:100%;padding:12px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:16px;cursor:pointer;margin-bottom:10px;">로그인</button>
-                            <button onclick="showSignup()" style="width:100%;padding:12px;background:#fff;color:#4CAF50;border:1px solid #4CAF50;border-radius:4px;font-size:16px;cursor:pointer;margin-bottom:20px;">회원가입</button>
-                            
-                            <div style="border-top:1px solid #ddd;padding-top:20px;margin-top:20px;">
-                                <p style="font-size:13px;color:#999;margin-bottom:15px;">소셜 로그인</p>
-                                <div style="display:flex;gap:10px;justify-content:center;">
-                                    <button onclick="socialLogin('google')" style="flex:1;padding:12px;background:#fff;border:1px solid #ddd;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
-                                        <span style="font-size:20px;">🔵</span>
-                                        <span style="font-size:13px;">Google</span>
-                                    </button>
-                                    <button onclick="socialLogin('kakao')" style="flex:1;padding:12px;background:#FEE500;border:none;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
-                                        <span style="font-size:20px;">💬</span>
-                                        <span style="font-size:13px;">Kakao</span>
-                                    </button>
-                                    <button onclick="socialLogin('naver')" style="flex:1;padding:12px;background:#03C75A;color:white;border:none;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
-                                        <span style="font-size:20px;">N</span>
-                                        <span style="font-size:13px;">Naver</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                const myPosts = posts.filter(p => p.author === currentUser.name);
-                document.getElementById('myPageContent').innerHTML = `
-                    <div style="text-align:center;padding:20px;background:#f5f5f5;border-radius:8px;margin-bottom:20px;">
-                        <div style="font-size:48px;margin-bottom:10px;">👤</div>
-                        <div style="font-size:18px;font-weight:600;margin-bottom:5px;">${currentUser.name}</div>
-                        <div style="font-size:14px;color:#666;">작성한 Story: ${myPosts.length}개</div>
-                        <button onclick="logout()" style="margin-top:15px;padding:8px 20px;background:#fff;border:1px solid #ddd;border-radius:4px;cursor:pointer;">로그아웃</button>
-                    </div>
-                    <h3 style="margin-bottom:15px;">내가 작성한 Story</h3>
-                    ${myPosts.map(p => `
-                        <div style="border:1px solid #ddd;border-radius:8px;padding:15px;margin-bottom:15px;">
-                            <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
-                                <div style="font-weight:600;">${p.cafe}</div>
-                                <div>${'⭐'.repeat(p.rating)}</div>
-                            </div>
-                            <div style="font-size:14px;color:#333;margin-bottom:8px;">${p.review}</div>
-                            <div style="font-size:12px;color:#999;">${p.date}</div>
-                        </div>
-                    `).join('') || '<p style="text-align:center;color:#999;padding:20px 0;">아직 작성한 Story가 없습니다.</p>'}
-                `;
-            }
-        }
-        
-        function showLoginPrompt(returnPage) {
-            if (confirm('로그인이 필요한 기능입니다. 로그인하시겠습니까?')) {
-                showPage('mypage');
-            } else {
-                showPage('map');
-            }
-        }
-        
-        function login() {
-            const id = document.getElementById('loginId').value.trim();
-            const pw = document.getElementById('loginPw').value;
-            
-            if (!id || !pw) {
-                alert('아이디와 비밀번호를 입력해주세요.');
-                return;
-            }
-            
-            // 로컬스토리지에서 사용자 정보 가져오기
-            const users = JSON.parse(localStorage.getItem('cagongUsers')) || [];
-            const user = users.find(u => u.id === id && u.password === pw);
-            
-            if (user) {
-                currentUser = { id: user.id, name: user.name };
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                alert('로그인 성공!');
-                loadMyPage();
-            } else {
-                alert('아이디 또는 비밀번호가 일치하지 않습니다.');
-            }
-        }
-        
-        function showSignup() {
-            document.getElementById('myPageContent').innerHTML = `
-                <div style="max-width:400px;margin:0 auto;padding:20px;">
-                    <h2 style="text-align:center;margin-bottom:30px;">회원가입</h2>
-                    <div style="margin-bottom:15px;">
-                        <label style="display:block;margin-bottom:5px;font-size:14px;font-weight:600;">아이디</label>
-                        <input type="text" id="signupId" placeholder="4자 이상" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:4px;font-size:14px;box-sizing:border-box;">
-                    </div>
-                    <div style="margin-bottom:15px;">
-                        <label style="display:block;margin-bottom:5px;font-size:14px;font-weight:600;">비밀번호</label>
-                        <input type="password" id="signupPw" placeholder="6자 이상" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:4px;font-size:14px;box-sizing:border-box;">
-                    </div>
-                    <div style="margin-bottom:15px;">
-                        <label style="display:block;margin-bottom:5px;font-size:14px;font-weight:600;">비밀번호 확인</label>
-                        <input type="password" id="signupPwConfirm" placeholder="비밀번호 재입력" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:4px;font-size:14px;box-sizing:border-box;">
-                    </div>
-                    <div style="margin-bottom:20px;">
-                        <label style="display:block;margin-bottom:5px;font-size:14px;font-weight:600;">닉네임</label>
-                        <input type="text" id="signupName" placeholder="2자 이상" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:4px;font-size:14px;box-sizing:border-box;">
-                    </div>
-                    <button onclick="signup()" style="width:100%;padding:12px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:16px;cursor:pointer;margin-bottom:10px;">가입하기</button>
-                    <button onclick="loadMyPage()" style="width:100%;padding:12px;background:#fff;color:#666;border:1px solid #ddd;border-radius:4px;font-size:16px;cursor:pointer;">취소</button>
-                </div>
-            `;
-        }
-        
-        function signup() {
-            const id = document.getElementById('signupId').value.trim();
-            const pw = document.getElementById('signupPw').value;
-            const pwConfirm = document.getElementById('signupPwConfirm').value;
-            const name = document.getElementById('signupName').value.trim();
-            
-            if (id.length < 4) {
-                alert('아이디는 4자 이상이어야 합니다.');
-                return;
-            }
-            if (pw.length < 6) {
-                alert('비밀번호는 6자 이상이어야 합니다.');
-                return;
-            }
-            if (pw !== pwConfirm) {
-                alert('비밀번호가 일치하지 않습니다.');
-                return;
-            }
-            if (name.length < 2) {
-                alert('닉네임은 2자 이상이어야 합니다.');
-                return;
-            }
-            
-            // 중복 확인
-            const users = JSON.parse(localStorage.getItem('cagongUsers')) || [];
-            if (users.find(u => u.id === id)) {
-                alert('이미 사용 중인 아이디입니다.');
-                return;
-            }
-            if (users.find(u => u.name === name)) {
-                alert('이미 사용 중인 닉네임입니다.');
-                return;
-            }
-            
-            // 사용자 추가
-            users.push({ id, password: pw, name });
-            localStorage.setItem('cagongUsers', JSON.stringify(users));
-            
-            alert('회원가입 완료! 로그인해주세요.');
-            loadMyPage();
-        }
-        
-        function socialLogin(provider) {
-            alert(`${provider} 소셜 로그인은 준비 중입니다.\n현재는 일반 로그인을 이용해주세요.`);
-            // TODO: 실제 소셜 로그인 구현 시
-            // Google: OAuth 2.0
-            // Kakao: Kakao Login API
-            // Naver: Naver Login API
-        }
-        
-        function showLoginForm() {
-            loadMyPage();
-        }
-        
-        function logout() {
-            if (confirm('로그아웃하시겠습니까?')) {
-                currentUser = null;
-                localStorage.removeItem('currentUser');
-                loadMyPage();
-            }
-        }
-        
-        // 특정 카페에 대한 Story 작성
-        function writeStoryForCafe(cafeName) {
-            if (!currentUser) {
-                if (confirm('로그인이 필요합니다. 로그인하시겠습니까?')) {
-                    showPage('mypage');
-                }
-                return;
-            }
-            
-            // 모달 닫기 (bottomNav는 제외)
-            document.querySelectorAll('div[style*="position:fixed"][style*="z-index:2000"]').forEach(el => {
-                if (el.id !== 'bottomNav') el.remove();
-            });
-            
-            // 포스팅 페이지로 이동
-            showPage('post');
-            
-            // 카페 자동 선택
-            setTimeout(() => {
-                const cafeSelect = document.getElementById('postCafe');
-                if (cafeSelect) {
-                    const cafeIndex = allCafes.findIndex(c => c.name === cafeName);
-                    if (cafeIndex !== -1) {
-                        cafeSelect.value = cafeIndex;
+            const token = localStorage.getItem('token');
+            try {
+                const response = await fetch('/api/reviews/delete/' + reviewId, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
                     }
+                });
+                
+                if (response.ok) {
+                    loadUserReviews(cafeId);
+                } else {
+                    alert('리뷰 삭제 실패');
                 }
-            }, 100);
+            } catch (err) {
+                alert('리뷰 삭제 실패: ' + err.message);
+            }
         }
     </script>
 </body>
