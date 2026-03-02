@@ -1440,6 +1440,16 @@
         
         let allStories = [];
         
+        function findAndShowCafe(cafeName) {
+            document.getElementById('reviewDetailModal').style.display = 'none';
+            const cafe = allCafes.find(c => c.name === cafeName);
+            if (cafe && cafe.detailData) {
+                showModal(cafe, cafe.detailData);
+            } else {
+                alert('카페 정보를 찾을 수 없습니다.');
+            }
+        }
+        
         function showReviewDetail(reviewId) {
             const review = allStories.find(s => s.id === reviewId);
             if (!review) return;
@@ -1449,7 +1459,10 @@
             
             let html = '<div style="padding:20px;max-height:90vh;overflow-y:auto;">';
             html += '<button onclick="document.getElementById(\'reviewDetailModal\').style.display=\'none\'" style="float:right;background:none;border:none;font-size:28px;cursor:pointer;line-height:1;">&times;</button>';
-            html += '<h3 style="margin-bottom:10px;clear:both;">' + (review.nickname || review.username || '익명') + '</h3>';
+            html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;clear:both;">';
+            html += '<h2 onclick="findAndShowCafe(\'' + review.cafe_name.replace(/'/g, "\\'") + '\')" style="margin:0;font-size:20px;color:#000;cursor:pointer;text-decoration:underline;">' + review.cafe_name + '</h2>';
+            html += '<span style="font-size:14px;color:#999;">' + (review.nickname || review.username || '익명') + '</span>';
+            html += '</div>';
             html += '<div style="margin-bottom:15px;font-size:18px;">' + '⭐'.repeat(review.rating) + '</div>';
             
             if (images.length > 0) {
