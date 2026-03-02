@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   }
   
   try {
-    const response = await fetch('http://138.2.127.70:8000/api/reviews/add', {
+    const response = await fetch('http://138.2.127.70:8001/api/reviews', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(req.body)
@@ -12,7 +12,6 @@ export default async function handler(req, res) {
     const data = await response.json();
     res.status(response.status).json(data);
   } catch (error) {
-    console.error('Proxy error:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 }
