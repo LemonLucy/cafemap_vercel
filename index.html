@@ -1366,15 +1366,16 @@
             // 캐시가 없으면 API 호출
             if (stories.length === 0) {
                 try {
-                    const response = await fetch(`${API_BASE_URL}/api/reviews?cafe_name=${encodeURIComponent(cafeName)}`);
-                    const result = await response.json();
-                    stories = result.reviews || [];
-                    
-                    // localStorage에 캐시
-                    localStorage.setItem(cacheKey, JSON.stringify({
-                        timestamp: Date.now(),
-                        stories: stories
-                    }));
+                    const response = await fetch(`${API_BASE_URL}/api/reviews/cafe/${encodeURIComponent(cafeName)}`);
+                    if (response.ok) {
+                        stories = await response.json();
+                        
+                        // localStorage에 캐시
+                        localStorage.setItem(cacheKey, JSON.stringify({
+                            timestamp: Date.now(),
+                            stories: stories
+                        }));
+                    }
                 } catch (err) {
                     console.error('Story API 실패:', err);
                 }
