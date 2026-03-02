@@ -1945,30 +1945,38 @@
                 <div id="storyList"></div>
             `;
             
-            // 이미지 미리보기
-            document.getElementById('postImage').addEventListener('change', function(e) {
-                console.log('Image input changed', e.target.files.length);
-                const files = Array.from(e.target.files).slice(0, 5);
-                const preview = document.getElementById('imagePreview');
+            // 이미지 미리보기 (DOM 생성 후 연결)
+            setTimeout(() => {
+                const imageInput = document.getElementById('postImage');
+                if (!imageInput) {
+                    console.error('postImage input not found');
+                    return;
+                }
                 
-                files.forEach((file, idx) => {
-                    console.log('Reading file:', file.name);
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        console.log('Image loaded, adding to preview');
-                        selectedImages.push(e.target.result);
-                        const imgDiv = document.createElement('div');
-                        imgDiv.style.cssText = 'position:relative;flex-shrink:0;';
-                        const currentIdx = selectedImages.length - 1;
-                        imgDiv.innerHTML = 
-                            '<img src="' + e.target.result + '" style="width:100px;height:100px;object-fit:cover;border-radius:8px;">' +
-                            '<button onclick="removeImage(' + currentIdx + ')" style="position:absolute;top:-5px;right:-5px;background:red;color:white;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;line-height:1;">×</button>';
-                        preview.appendChild(imgDiv);
-                        console.log('Total images:', selectedImages.length);
-                    };
-                    reader.readAsDataURL(file);
+                imageInput.addEventListener('change', function(e) {
+                    console.log('Image input changed', e.target.files.length);
+                    const files = Array.from(e.target.files).slice(0, 5);
+                    const preview = document.getElementById('imagePreview');
+                    
+                    files.forEach((file, idx) => {
+                        console.log('Reading file:', file.name);
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            console.log('Image loaded, adding to preview');
+                            selectedImages.push(e.target.result);
+                            const imgDiv = document.createElement('div');
+                            imgDiv.style.cssText = 'position:relative;flex-shrink:0;';
+                            const currentIdx = selectedImages.length - 1;
+                            imgDiv.innerHTML = 
+                                '<img src="' + e.target.result + '" style="width:100px;height:100px;object-fit:cover;border-radius:8px;">' +
+                                '<button onclick="removeImage(' + currentIdx + ')" style="position:absolute;top:-5px;right:-5px;background:red;color:white;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;line-height:1;">×</button>';
+                            preview.appendChild(imgDiv);
+                            console.log('Total images:', selectedImages.length);
+                        };
+                        reader.readAsDataURL(file);
+                    });
                 });
-            });
+            }, 100);
             
             loadStories();
         }
