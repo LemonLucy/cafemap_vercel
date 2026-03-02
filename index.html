@@ -1350,7 +1350,11 @@
             const modal = document.createElement('div');
             modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;';
             modal.innerHTML = '<div style="background:white;max-width:600px;max-height:80vh;overflow-y:auto;border-radius:12px;padding:30px;position:relative;width:100%;">' +
-                '<button onclick="alert(\'좋아요 기능은 로그인 후 사용 가능합니다\');event.stopPropagation();" style="position:absolute;top:18px;right:60px;background:none;border:none;font-size:28px;cursor:pointer;padding:0;line-height:1;display:flex;align-items:center;" title="좋아요">🤍</button>' +
+                '<button onclick="toggleFavorite(this);event.stopPropagation();" style="position:absolute;top:18px;right:60px;background:none;border:none;cursor:pointer;padding:0;line-height:1;display:flex;align-items:center;" title="즐겨찾기">' +
+                '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c9b8a3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>' +
+                '</svg>' +
+                '</button>' +
                 '<span style="position:absolute;top:15px;right:20px;font-size:32px;cursor:pointer;color:#999;line-height:1;" onclick="this.parentElement.parentElement.remove()">×</span>' +
                 html + '</div>';
             modal.onclick = function(e) { 
@@ -1360,6 +1364,20 @@
             
             // Story 로드
             loadCafeStories(cafe.name);
+        }
+        
+        function toggleFavorite(btn) {
+            const svg = btn.querySelector('svg');
+            const path = svg.querySelector('path');
+            const currentFill = svg.getAttribute('fill');
+            
+            if (currentFill === 'none' || !currentFill) {
+                svg.setAttribute('fill', '#5d4e37');
+                svg.setAttribute('stroke', '#5d4e37');
+            } else {
+                svg.setAttribute('fill', 'none');
+                svg.setAttribute('stroke', '#c9b8a3');
+            }
         }
         
         async function loadCafeStories(cafeName) {
