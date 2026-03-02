@@ -1913,7 +1913,9 @@
         let selectedImages = [];
         
         function loadPostPage() {
-            selectedImages = [];
+            if (!editingReviewId) {
+                selectedImages = [];
+            }
             document.getElementById('postContent').innerHTML = `
                 <div style="margin-bottom:20px;">
                     <label style="display:block;margin-bottom:8px;font-weight:600;">카페 선택</label>
@@ -1969,13 +1971,17 @@
         
         function removeImage(idx) {
             selectedImages.splice(idx, 1);
-            loadPostPage();
-            setTimeout(() => {
-                const cafeSelect = document.getElementById('postCafe');
-                if (cafeSelect && cafeSelect.value) {
-                    // 카페 선택 유지
-                }
-            }, 100);
+            // 미리보기만 다시 그리기
+            const preview = document.getElementById('imagePreview');
+            preview.innerHTML = '';
+            selectedImages.forEach((img, i) => {
+                const imgDiv = document.createElement('div');
+                imgDiv.style.cssText = 'position:relative;flex-shrink:0;';
+                imgDiv.innerHTML = 
+                    '<img src="' + img + '" style="width:100px;height:100px;object-fit:cover;border-radius:8px;">' +
+                    '<button onclick="removeImage(' + i + ')" style="position:absolute;top:-5px;right:-5px;background:red;color:white;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;line-height:1;">×</button>';
+                preview.appendChild(imgDiv);
+            });
         }
         
         let selectedRating = 0;
