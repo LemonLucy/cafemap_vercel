@@ -1807,7 +1807,7 @@
             });
         }
         
-        function submitPost() {
+        async function submitPost() {
             const cafeIdx = document.getElementById('postCafe').value;
             const review = document.getElementById('postReview').value;
             
@@ -1816,20 +1816,33 @@
                 return;
             }
             
-            const post = {
-                id: Date.now(),
-                cafe: allCafes[cafeIdx].name,
-                rating: selectedRating,
-                review: review,
-                author: currentUser.name,
-                date: new Date().toLocaleDateString('ko-KR'),
-                images: selectedImages.length > 0 ? selectedImages : []
-            };
+            const cafe = allCafes[cafeIdx];
             
-            posts.unshift(post);
-            localStorage.setItem('cagongPosts', JSON.stringify(posts));
-            alert('작성 완료!');
-            showPage('map');
+            // API로 전송
+            try {
+                const imageData = selectedImages.length > 0 ? selectedImages[0] : null;
+                const response = await fetch('http://138.2.127.70:8001/api/reviews', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        user_id: currentUser.id,
+                        cafe_name: cafe.name,
+                        cafe_address: cafe.address || '',
+                        rating: selectedRating,
+                        review_text: review,
+                        image: imageData
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('작성 완료!');
+                    showPage('map');
+                } else {
+                    alert('작성 실패');
+                }
+            } catch (err) {
+                alert('작성 실패: ' + err.message);
+            }
         }
         
         function loadStories() {
