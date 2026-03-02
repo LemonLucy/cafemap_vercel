@@ -1280,15 +1280,43 @@
                 html += '</div></div>';
             }
             
-            // 카공 Story 섹션 (API에서 가져오기)
-            html += '<div id="cafe-stories-' + cafe.name.replace(/"/g, '') + '" style="margin-top:20px;">';
+            // 카공 Story 섹션 (detailData에서 가져오기)
+            const stories = data.stories || [];
+            html += '<div style="margin-top:20px;">';
             html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">';
-            html += '<h3 style="font-size:14px;margin:0;">💬 카공 Story</h3>';
+            html += '<h3 style="font-size:14px;margin:0;">💬 카공 Story (' + stories.length + ')</h3>';
             if (currentUser) {
                 html += '<button onclick="event.stopPropagation();writeStoryForCafe(this.dataset.cafe)" data-cafe="' + cafe.name.replace(/"/g, '&quot;') + '" style="padding:6px 12px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;">Story 작성</button>';
             }
             html += '</div>';
-            html += '<div id="cafe-stories-content-' + cafe.name.replace(/"/g, '') + '" style="text-align:center;padding:10px;color:#999;">로딩 중...</div>';
+            
+            if (stories.length > 0) {
+                stories.forEach(function(story) {
+                    const isMyStory = currentUser && currentUser.id === story.user_id;
+                    html += '<div style="padding:12px;margin:8px 0;background:#f0f8ff;border-radius:8px;border-left:3px solid #2196F3;position:relative;">';
+                    
+                    if (isMyStory) {
+                        html += '<div style="position:absolute;top:8px;right:8px;">' +
+                            '<button onclick="deleteStory(' + story.id + ',\'' + cafe.name.replace(/'/g, "\\'") + '\')" style="padding:4px 8px;background:#f44336;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">삭제</button>' +
+                            '</div>';
+                    }
+                    
+                    html += '<div style="display:flex;justify-content:space-between;margin-bottom:6px;padding-right:60px;">' +
+                        '<span style="font-weight:600;font-size:13px;">' + story.nickname + '</span>' +
+                        '<span style="font-size:12px;">' + '⭐'.repeat(story.rating) + '</span>' +
+                        '</div>';
+                    
+                    if (story.image_url) {
+                        html += '<div style="margin-bottom:8px;"><img src="/api/image?path=' + story.image_url.replace('/uploads/', '') + '" style="max-width:100%;border-radius:6px;"></div>';
+                    }
+                    
+                    html += '<div style="font-size:13px;color:#333;line-height:1.5;margin-bottom:6px;">' + story.content + '</div>' +
+                        '<div style="font-size:11px;color:#999;">' + new Date(story.created_at).toLocaleDateString() + '</div>' +
+                        '</div>';
+                });
+            } else {
+                html += '<div style="text-align:center;padding:20px;color:#999;background:#f9f9f9;border-radius:8px;">아직 작성된 Story가 없습니다.</div>';
+            }
             html += '</div>';
             
             // 카페 이미지 갤러리 (Object Storage)
@@ -1340,9 +1368,6 @@
                 if (e.target === modal) modal.remove(); 
             };
             document.body.appendChild(modal);
-            
-            // Story 로드
-            loadCafeStories(cafe.name);
         }
         
         async function loadCafeStories(cafeName) {
