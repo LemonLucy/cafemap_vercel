@@ -2018,30 +2018,30 @@
             }
             document.getElementById('postContent').innerHTML = `
                 <div style="margin-bottom:20px;">
-                    <label style="display:block;margin-bottom:8px;font-weight:600;">카페 선택</label>
-                    <select id="postCafe" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;">
+                    <label style="display:block;margin-bottom:8px;font-weight:600;color:#5d4e37;">카페 선택</label>
+                    <select id="postCafe" style="width:100%;padding:10px;border:1px solid #e8e4dc;border-radius:4px;">
                         <option value="">카페를 선택하세요</option>
                         ${allCafes.map((c, i) => `<option value="${i}">${c.name}</option>`).join('')}
                     </select>
                 </div>
                 <div style="margin-bottom:20px;">
-                    <label style="display:block;margin-bottom:8px;font-weight:600;">평점</label>
-                    <div style="display:flex;gap:10px;">
-                        ${[1,2,3,4,5].map(n => `<button onclick="selectRating(${n})" id="rating${n}" style="padding:10px 20px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;">⭐ ${n}</button>`).join('')}
+                    <label style="display:block;margin-bottom:8px;font-weight:600;color:#5d4e37;">평점</label>
+                    <div id="starRating" style="display:flex;gap:5px;font-size:32px;cursor:pointer;">
+                        ${[1,2,3,4,5].map(n => `<span onclick="selectRating(${n})" id="star${n}" style="color:#e0e0e0;">★</span>`).join('')}
                     </div>
                 </div>
                 <div style="margin-bottom:20px;">
-                    <label style="display:block;margin-bottom:8px;font-weight:600;">사진 (최대 5장)</label>
-                    <input type="file" id="postImage" accept="image/*" multiple style="width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;">
-                    <div id="imagePreview" style="display:flex;gap:8px;margin-top:10px;overflow-x:auto;padding:5px;border:1px dashed #ddd;min-height:50px;border-radius:4px;"></div>
+                    <label style="display:block;margin-bottom:8px;font-weight:600;color:#5d4e37;">사진 (최대 5장)</label>
+                    <input type="file" id="postImage" accept="image/*" multiple style="width:100%;padding:10px;border:1px solid #e8e4dc;border-radius:4px;">
+                    <div id="imagePreview" style="display:flex;gap:8px;margin-top:10px;overflow-x:auto;padding:5px;border:1px dashed #e8e4dc;min-height:50px;border-radius:4px;"></div>
                 </div>
                 <div style="margin-bottom:20px;">
-                    <label style="display:block;margin-bottom:8px;font-weight:600;">리뷰</label>
-                    <textarea id="postReview" placeholder="카공 경험을 공유해주세요...&#10;엔터로 줄바꿈 가능합니다." style="width:100%;height:150px;padding:10px;border:1px solid #ddd;border-radius:4px;resize:vertical;font-family:inherit;"></textarea>
+                    <label style="display:block;margin-bottom:8px;font-weight:600;color:#5d4e37;">리뷰</label>
+                    <textarea id="postReview" placeholder="카공 경험을 공유해주세요...&#10;엔터로 줄바꿈 가능합니다." style="width:100%;height:150px;padding:10px;border:1px solid #e8e4dc;border-radius:4px;resize:vertical;font-family:inherit;"></textarea>
                 </div>
-                <button onclick="submitPost()" style="width:100%;padding:15px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:16px;font-weight:600;cursor:pointer;">작성 완료</button>
+                <button onclick="submitPost()" style="width:100%;padding:15px;background:#c9b8a3;color:white;border:none;border-radius:4px;font-size:16px;font-weight:600;cursor:pointer;">작성 완료</button>
                 
-                <h3 style="margin:40px 0 20px 0;padding-top:20px;border-top:1px solid #ddd;">📝 카공 Story</h3>
+                <h3 style="margin:40px 0 20px 0;padding-top:20px;border-top:1px solid #e8e4dc;color:#5d4e37;">📝 카공 Story</h3>
                 <div id="storyList"></div>
             `;
             
@@ -2069,7 +2069,7 @@
                             const currentIdx = selectedImages.length - 1;
                             imgDiv.innerHTML = 
                                 '<img src="' + e.target.result + '" style="width:100px;height:100px;object-fit:cover;border-radius:8px;">' +
-                                '<button onclick="removeImage(' + currentIdx + ')" style="position:absolute;top:-5px;right:-5px;background:red;color:white;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;line-height:1;">×</button>';
+                                '<button onclick="removeImage(' + currentIdx + ')" style="position:absolute;top:-5px;right:-5px;background:#8b7355;color:white;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;line-height:1;">×</button>';
                             preview.appendChild(imgDiv);
                             console.log('Total images:', selectedImages.length);
                         };
@@ -2091,7 +2091,7 @@
                 imgDiv.style.cssText = 'position:relative;flex-shrink:0;';
                 imgDiv.innerHTML = 
                     '<img src="' + img + '" style="width:100px;height:100px;object-fit:cover;border-radius:8px;">' +
-                    '<button onclick="removeImage(' + i + ')" style="position:absolute;top:-5px;right:-5px;background:red;color:white;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;line-height:1;">×</button>';
+                    '<button onclick="removeImage(' + i + ')" style="position:absolute;top:-5px;right:-5px;background:#8b7355;color:white;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;line-height:1;">×</button>';
                 preview.appendChild(imgDiv);
             });
         }
@@ -2100,9 +2100,8 @@
         function selectRating(n) {
             selectedRating = n;
             [1,2,3,4,5].forEach(i => {
-                const btn = document.getElementById('rating' + i);
-                if (btn) btn.style.background = i <= n ? '#4CAF50' : '#fff';
-                if (btn) btn.style.color = i <= n ? 'white' : '#333';
+                const star = document.getElementById('star' + i);
+                if (star) star.style.color = i <= n ? '#c9b8a3' : '#e0e0e0';
             });
         }
         
@@ -2185,7 +2184,7 @@
                 let buttonsHtml = '';
                 if (isMyPost) {
                     buttonsHtml = '<div style="position:absolute;top:10px;right:10px;display:flex;gap:5px;z-index:10;">' +
-                        '<button onclick="event.stopPropagation();deletePost(' + p.id + ')" style="padding:8px 12px;background:#f44336;color:white;border:none;border-radius:4px;font-size:13px;cursor:pointer;font-weight:600;">삭제</button>' +
+                        '<button onclick="event.stopPropagation();deletePost(' + p.id + ')" style="padding:8px 12px;background:#8b7355;color:white;border:none;border-radius:4px;font-size:13px;cursor:pointer;font-weight:600;">삭제</button>' +
                         '</div>';
                 }
                 
@@ -2196,19 +2195,22 @@
                         '</div>';
                 }
                 
+                const stars = '<span style="color:#c9b8a3;">' + '★'.repeat(p.rating) + '</span>' + 
+                             '<span style="color:#e0e0e0;">' + '★'.repeat(5 - p.rating) + '</span>';
+                
                 return `
-                <div style="border:1px solid #ddd;border-radius:8px;padding:15px;margin-bottom:15px;position:relative;">
+                <div style="border:1px solid #e8e4dc;border-radius:8px;padding:15px;margin-bottom:15px;position:relative;background:#fafaf8;">
                     ${buttonsHtml}
                     <div onclick="showStoryDetail(${p.id})" style="cursor:pointer;">
                         <div style="display:flex;justify-content:space-between;margin-bottom:10px;padding-right:${isMyPost ? '100px' : '0'};">
-                            <div style="font-weight:600;">${p.cafe}</div>
-                            <div>${'⭐'.repeat(p.rating)}</div>
+                            <div style="font-weight:600;color:#5d4e37;">${p.cafe}</div>
+                            <div style="font-size:18px;">${stars}</div>
                         </div>
                         ${imagesHtml}
                         <div style="font-size:14px;color:#333;margin-bottom:8px;line-height:1.5;">${reviewPreview}</div>
                         <div style="display:flex;justify-content:space-between;align-items:center;">
                             <div style="font-size:12px;color:#999;">${p.author} · ${p.date}</div>
-                            ${images.length > 0 ? '<div style="font-size:12px;color:#666;">📷 ' + images.length + '장</div>' : ''}
+                            ${images.length > 0 ? '<div style="font-size:12px;color:#8b7355;">📷 ' + images.length + '장</div>' : ''}
                         </div>
                     </div>
                 </div>
