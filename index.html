@@ -1239,44 +1239,44 @@
             html += '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0;">';
             
             if (data.workScore > 0) {
-                html += '<div style="padding:16px;background:#e8f5e9;border-radius:8px;text-align:center;">' +
+                html += '<div style="padding:16px;background:#f5f0eb;border-radius:8px;text-align:center;">' +
                     '<div style="font-size:24px;">💼</div>' +
-                    '<div style="font-size:20px;font-weight:bold;margin:8px 0;">' + data.workScore + '/10</div>' +
-                    '<div style="font-size:12px;color:#666;">작업 적합도</div></div>';
+                    '<div style="font-size:20px;font-weight:bold;margin:8px 0;color:#5d4e37;">' + data.workScore + '/10</div>' +
+                    '<div style="font-size:12px;color:#8b7355;">작업 적합도</div></div>';
             }
             
             if (data.outletLevel !== '정보 없음') {
-                html += '<div style="padding:16px;background:#fff3e0;border-radius:8px;text-align:center;">' +
+                html += '<div style="padding:16px;background:#f5f0eb;border-radius:8px;text-align:center;">' +
                     '<div style="font-size:24px;">🔌</div>' +
-                    '<div style="font-size:14px;font-weight:bold;margin:8px 0;">' + data.outletLevel + '</div>' +
-                    '<div style="font-size:12px;color:#666;">콘센트</div></div>';
+                    '<div style="font-size:14px;font-weight:bold;margin:8px 0;color:#5d4e37;">' + data.outletLevel + '</div>' +
+                    '<div style="font-size:12px;color:#8b7355;">콘센트</div></div>';
             }
             
             if (data.noiseLevel !== '정보 없음') {
-                html += '<div style="padding:16px;background:#e3f2fd;border-radius:8px;text-align:center;">' +
+                html += '<div style="padding:16px;background:#f5f0eb;border-radius:8px;text-align:center;">' +
                     '<div style="font-size:24px;">🔇</div>' +
-                    '<div style="font-size:14px;font-weight:bold;margin:8px 0;">' + data.noiseLevel + '</div>' +
-                    '<div style="font-size:12px;color:#666;">소음 레벨</div></div>';
+                    '<div style="font-size:14px;font-weight:bold;margin:8px 0;color:#5d4e37;">' + data.noiseLevel + '</div>' +
+                    '<div style="font-size:12px;color:#8b7355;">소음 레벨</div></div>';
             }
             
             if (data.tableHeight !== '정보 없음') {
-                html += '<div style="padding:16px;background:#f3e5f5;border-radius:8px;text-align:center;">' +
+                html += '<div style="padding:16px;background:#f5f0eb;border-radius:8px;text-align:center;">' +
                     '<div style="font-size:24px;">📏</div>' +
-                    '<div style="font-size:14px;font-weight:bold;margin:8px 0;">' + data.tableHeight + '</div>' +
-                    '<div style="font-size:12px;color:#666;">테이블 높이</div></div>';
+                    '<div style="font-size:14px;font-weight:bold;margin:8px 0;color:#5d4e37;">' + data.tableHeight + '</div>' +
+                    '<div style="font-size:12px;color:#8b7355;">테이블 높이</div></div>';
             }
             
             if (data.spaceLevel && data.spaceLevel !== '정보 없음') {
-                html += '<div style="padding:16px;background:#fff9c4;border-radius:8px;text-align:center;">' +
+                html += '<div style="padding:16px;background:#f5f0eb;border-radius:8px;text-align:center;">' +
                     '<div style="font-size:24px;">📐</div>' +
-                    '<div style="font-size:14px;font-weight:bold;margin:8px 0;">' + data.spaceLevel + '</div>' +
-                    '<div style="font-size:12px;color:#666;">공간감</div></div>';
+                    '<div style="font-size:14px;font-weight:bold;margin:8px 0;color:#5d4e37;">' + data.spaceLevel + '</div>' +
+                    '<div style="font-size:12px;color:#8b7355;">공간감</div></div>';
             }
             
             html += '</div>';
             
             // 기본 정보
-            html += '<div style="margin:20px 0;line-height:1.8;background:#f5f5f5;padding:16px;border-radius:8px;">';
+            html += '<div style="margin:20px 0;line-height:1.8;background:#faf8f6;padding:16px;border-radius:8px;border-left:3px solid #c9b8a3;">';
             html += '<div>📍 ' + cafe.address + '</div>';
             if (cafe.phone) html += '<div>📞 ' + cafe.phone + '</div>';
             if (data.hasWifi) html += '<div>📶 WiFi 가능</div>';
@@ -1286,11 +1286,11 @@
             
             // 키워드 분석
             if (data.keywords && Object.keys(data.keywords).length > 0) {
-                html += '<div style="margin:20px 0;"><h3 style="font-size:14px;margin-bottom:10px;">📊 블로그 키워드 분석</h3>';
+                html += '<div style="margin:20px 0;"><h3 style="font-size:14px;margin-bottom:10px;color:#5d4e37;">📊 블로그 키워드 분석</h3>';
                 html += '<div style="display:flex;gap:8px;flex-wrap:wrap;">';
                 for (let key in data.keywords) {
                     if (data.keywords[key] > 0) {
-                        html += '<span style="padding:6px 12px;background:#e0e0e0;border-radius:16px;font-size:12px;">' + 
+                        html += '<span style="padding:6px 12px;background:#f5f0eb;border-radius:16px;font-size:12px;color:#5d4e37;">' + 
                             key + ' (' + data.keywords[key] + ')</span>';
                     }
                 }
@@ -1300,9 +1300,9 @@
             // 카공 Story 섹션 (API에서 가져오기)
             html += '<div id="cafe-stories-' + cafe.name.replace(/"/g, '') + '" style="margin-top:20px;">';
             html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">';
-            html += '<h3 style="font-size:14px;margin:0;">💬 카공 Story</h3>';
+            html += '<h3 style="font-size:14px;margin:0;color:#5d4e37;">💬 카공 Story</h3>';
             if (currentUser) {
-                html += '<button onclick="event.stopPropagation();writeStoryForCafe(this.dataset.cafe)" data-cafe="' + cafe.name.replace(/"/g, '&quot;') + '" style="padding:6px 12px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;">Story 작성</button>';
+                html += '<button onclick="event.stopPropagation();writeStoryForCafe(this.dataset.cafe)" data-cafe="' + cafe.name.replace(/"/g, '&quot;') + '" style="padding:6px 12px;background:#c9b8a3;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;">Story 작성</button>';
             }
             html += '</div>';
             html += '<div id="cafe-stories-content-' + cafe.name.replace(/"/g, '') + '" style="text-align:center;padding:10px;color:#999;">로딩 중...</div>';
@@ -1330,19 +1330,19 @@
             
             // 블로그 리뷰
             if (data.blogItems && data.blogItems.length > 0) {
-                html += '<div style="margin-top:20px;"><h3 style="font-size:14px;margin-bottom:10px;">📝 블로그 리뷰 (' + data.blogItems.length + ')</h3>';
+                html += '<div style="margin-top:20px;"><h3 style="font-size:14px;margin-bottom:10px;color:#5d4e37;">📝 블로그 리뷰 (' + data.blogItems.length + ')</h3>';
                 data.blogItems.forEach(function(item, i) {
-                    html += '<a href="' + item.url + '" target="_blank" style="display:block;padding:12px;margin:8px 0;background:#f9f9f9;border-radius:8px;text-decoration:none;color:#333;transition:background 0.2s;border-left:3px solid #4CAF50;" onmouseover="this.style.background=\'#f0f0f0\'" onmouseout="this.style.background=\'#f9f9f9\'">' +
-                        '<div style="font-weight:600;font-size:13px;margin-bottom:6px;color:#222;">' + item.title + '</div>' +
-                        '<div style="font-size:12px;color:#666;line-height:1.4;">' + item.description + '</div>' +
+                    html += '<a href="' + item.url + '" target="_blank" style="display:block;padding:12px;margin:8px 0;background:#faf8f6;border-radius:8px;text-decoration:none;color:#333;transition:background 0.2s;border-left:3px solid #c9b8a3;" onmouseover="this.style.background=\'#f5f0eb\'" onmouseout="this.style.background=\'#faf8f6\'">' +
+                        '<div style="font-weight:600;font-size:13px;margin-bottom:6px;color:#5d4e37;">' + item.title + '</div>' +
+                        '<div style="font-size:12px;color:#8b7355;line-height:1.4;">' + item.description + '</div>' +
                         '</a>';
                 });
                 html += '</div>';
             } else if (data.blogUrls && data.blogUrls.length > 0) {
                 // 하위 호환성
-                html += '<div style="margin-top:20px;"><h3 style="font-size:14px;margin-bottom:10px;">📝 블로그 리뷰</h3>';
+                html += '<div style="margin-top:20px;"><h3 style="font-size:14px;margin-bottom:10px;color:#5d4e37;">📝 블로그 리뷰</h3>';
                 data.blogUrls.forEach(function(url, i) {
-                    html += '<a href="' + url + '" target="_blank" style="display:block;padding:12px;margin:8px 0;background:#f0f0f0;border-radius:6px;text-decoration:none;color:#333;transition:background 0.2s;" onmouseover="this.style.background=\'#e0e0e0\'" onmouseout="this.style.background=\'#f0f0f0\'">📝 블로그 리뷰 ' + (i + 1) + '</a>';
+                    html += '<a href="' + url + '" target="_blank" style="display:block;padding:12px;margin:8px 0;background:#faf8f6;border-radius:6px;text-decoration:none;color:#5d4e37;transition:background 0.2s;" onmouseover="this.style.background=\'#f5f0eb\'" onmouseout="this.style.background=\'#faf8f6\'">📝 블로그 리뷰 ' + (i + 1) + '</a>';
                 });
                 html += '</div>';
             }
