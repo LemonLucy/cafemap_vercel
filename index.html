@@ -2502,6 +2502,9 @@
             // 포스팅 페이지로 이동
             showPage('post');
             
+            // 맨 위로 스크롤
+            window.scrollTo(0, 0);
+            
             // 카페 자동 선택
             setTimeout(() => {
                 const cafeSelect = document.getElementById('postCafe');
