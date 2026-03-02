@@ -1948,8 +1948,7 @@
             // 이미지 미리보기
             document.getElementById('postImage').addEventListener('change', function(e) {
                 const files = Array.from(e.target.files).slice(0, 5);
-                selectedImages = [];
-                document.getElementById('imagePreview').innerHTML = '';
+                const preview = document.getElementById('imagePreview');
                 
                 files.forEach((file, idx) => {
                     const reader = new FileReader();
@@ -1957,10 +1956,11 @@
                         selectedImages.push(e.target.result);
                         const imgDiv = document.createElement('div');
                         imgDiv.style.cssText = 'position:relative;flex-shrink:0;';
+                        const currentIdx = selectedImages.length - 1;
                         imgDiv.innerHTML = 
                             '<img src="' + e.target.result + '" style="width:100px;height:100px;object-fit:cover;border-radius:8px;">' +
-                            '<button onclick="removeImage(' + idx + ')" style="position:absolute;top:-5px;right:-5px;background:red;color:white;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;line-height:1;">×</button>';
-                        document.getElementById('imagePreview').appendChild(imgDiv);
+                            '<button onclick="removeImage(' + currentIdx + ')" style="position:absolute;top:-5px;right:-5px;background:red;color:white;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;line-height:1;">×</button>';
+                        preview.appendChild(imgDiv);
                     };
                     reader.readAsDataURL(file);
                 });
