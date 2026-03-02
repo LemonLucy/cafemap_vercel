@@ -1425,11 +1425,17 @@
             if (!confirm('정말 삭제하시겠습니까?')) return;
             
             try {
-                const response = await fetch(`${API_BASE_URL}/api/reviews/${storyId}`, {
-                    method: 'DELETE'
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${API_BASE_URL}/api/reviews/delete/${storyId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
                 
                 if (response.ok) {
+                    alert('삭제되었습니다.');
+                    localStorage.removeItem('stories_' + cafeName);
                     loadCafeStories(cafeName);
                 } else {
                     alert('삭제 실패');
