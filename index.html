@@ -1216,7 +1216,12 @@
         });
         
         function showModal(cafe, data) {
-            let html = '<h2 style="margin-bottom:20px;">' + cafe.name + '</h2>';
+            let html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">';
+            html += '<h2 style="margin:0;">' + cafe.name + '</h2>';
+            if (currentUser) {
+                html += '<button onclick="event.stopPropagation();writeStoryForCafe(this.dataset.cafe)" data-cafe="' + cafe.name.replace(/"/g, '&quot;') + '" style="padding:8px 16px;background:#4CAF50;color:white;border:none;border-radius:6px;font-size:13px;cursor:pointer;font-weight:600;">📝 Story 작성</button>';
+            }
+            html += '</div>';
             
             // 카공 지표 카드
             html += '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0;">';
@@ -1282,10 +1287,7 @@
             
             // 카공 Story 섹션 (API에서 가져오기)
             html += '<div id="cafe-stories-' + cafe.name.replace(/"/g, '') + '" style="margin-top:20px;">';
-            html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">';
-            html += '<h3 style="font-size:14px;margin:0;">💬 카공 Story</h3>';
-            html += '<button onclick="event.stopPropagation();writeStoryForCafe(this.dataset.cafe)" data-cafe="' + cafe.name.replace(/"/g, '&quot;') + '" style="padding:6px 12px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;">Story 작성</button>';
-            html += '</div>';
+            html += '<h3 style="font-size:14px;margin-bottom:10px;">💬 카공 Story</h3>';
             html += '<div style="text-align:center;padding:10px;color:#999;">로딩 중...</div>';
             html += '</div>';
             
@@ -1352,10 +1354,7 @@
                 const result = await response.json();
                 const stories = result.reviews || [];
                 
-                let html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">';
-                html += '<h3 style="font-size:14px;margin:0;">💬 카공 Story (' + stories.length + ')</h3>';
-                html += '<button onclick="event.stopPropagation();writeStoryForCafe(this.dataset.cafe)" data-cafe="' + cafeName.replace(/"/g, '&quot;') + '" style="padding:6px 12px;background:#4CAF50;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;">Story 작성</button>';
-                html += '</div>';
+                let html = '<h3 style="font-size:14px;margin-bottom:10px;">💬 카공 Story (' + stories.length + ')</h3>';
                 
                 if (stories.length > 0) {
                     stories.forEach(function(story) {
@@ -1383,7 +1382,7 @@
                             '</div>';
                     });
                 } else {
-                    html += '<div style="text-align:center;padding:20px;color:#999;background:#f9f9f9;border-radius:8px;">아직 작성된 Story가 없습니다.<br>첫 번째 Story를 작성해보세요!</div>';
+                    html += '<div style="text-align:center;padding:20px;color:#999;background:#f9f9f9;border-radius:8px;">아직 작성된 Story가 없습니다.</div>';
                 }
                 
                 container.innerHTML = html;
