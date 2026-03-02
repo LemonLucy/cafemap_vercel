@@ -1413,7 +1413,7 @@
                             '</div>';
                     }
                     
-                    html += '<div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-right:60px;">' +
+                    html += '<div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-right:' + (isMyStory ? '120px' : '10px') + ';">' +
                         '<span style="font-weight:600;font-size:13px;">' + (story.nickname || story.username || '익명') + '</span>' +
                         '<span style="font-size:12px;">' + '⭐'.repeat(story.rating) + '</span>' +
                         '</div>';
