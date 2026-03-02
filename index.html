@@ -1413,7 +1413,7 @@
                             '</div>';
                     }
                     
-                    html += '<div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-right:' + (isMyStory ? '120px' : '10px') + ';">' +
+                    html += '<div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-right:' + (isMyStory ? '100px' : '10px') + ';">' +
                         '<span style="font-weight:600;font-size:13px;">' + (story.nickname || story.username || '익명') + '</span>' +
                         '<span style="font-size:12px;">' + '⭐'.repeat(story.rating) + '</span>' +
                         '</div>';
@@ -1492,41 +1492,47 @@
             }
         }
         
+        let editingReviewId = null;
+        
         async function editStory(reviewId) {
             const review = allStories.find(s => s.id === reviewId);
             if (!review) return;
             
-            const newRating = prompt('별점 (1-5):', review.rating);
-            if (!newRating || newRating < 1 || newRating > 5) return;
+            editingReviewId = reviewId;
+            selectedRating = review.rating;
+            selectedImages = review.image_url ? review.image_url.split(',').map(url => url.trim()) : [];
             
-            const newContent = prompt('리뷰 내용:', review.content || review.review_text);
-            if (!newContent || !newContent.trim()) return;
+            // 포스팅 페이지로 이동
+            showPage('post');
             
-            try {
-                const token = localStorage.getItem('token');
-                const response = await fetch(`${API_BASE_URL}/api/reviews/update/${reviewId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        rating: parseInt(newRating),
-                        content: newContent
-                    })
+            // 폼 채우기
+            setTimeout(() => {
+                const cafeIdx = allCafes.findIndex(c => c.name === review.cafe_name);
+                if (cafeIdx >= 0) {
+                    document.getElementById('postCafe').value = cafeIdx;
+                }
+                document.getElementById('postReview').value = review.content || review.review_text || '';
+                
+                // 별점 표시
+                document.querySelectorAll('.star-rating span').forEach((star, idx) => {
+                    star.style.color = idx < selectedRating ? '#FFD700' : '#ddd';
                 });
                 
-                if (response.ok) {
-                    alert('수정되었습니다.');
-                    localStorage.removeItem('stories_' + review.cafe_name);
-                    loadCafeStories(review.cafe_name);
-                    document.getElementById('reviewDetailModal').style.display = 'none';
-                } else {
-                    alert('수정 실패');
-                }
-            } catch (err) {
-                alert('수정 실패: ' + err.message);
-            }
+                // 이미지 미리보기
+                const preview = document.getElementById('imagePreview');
+                preview.innerHTML = '';
+                selectedImages.forEach((img, idx) => {
+                    const imgDiv = document.createElement('div');
+                    imgDiv.style.cssText = 'position:relative;flex-shrink:0;';
+                    imgDiv.innerHTML = 
+                        '<img src="' + img + '" style="width:100px;height:100px;object-fit:cover;border-radius:8px;">' +
+                        '<button onclick="removeImage(' + idx + ')" style="position:absolute;top:-5px;right:-5px;background:red;color:white;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;line-height:1;">×</button>';
+                    preview.appendChild(imgDiv);
+                });
+                
+                // 버튼 텍스트 변경
+                document.querySelector('#postContent button[onclick="submitPost()"]').textContent = '수정 완료';
+            }, 100);
         }
         
         function displayMarkers(cafes) {
@@ -1995,31 +2001,57 @@
             }
             
             const cafe = allCafes[cafeIdx];
+            const token = localStorage.getItem('token');
             
-            // API로 전송
             try {
-                const token = localStorage.getItem('token');
-                const response = await fetch(`${API_BASE_URL}/api/reviews/add`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        cafe_id: cafe.name,
-                        rating: selectedRating,
-                        content: review,
-                        images: selectedImages
-                    })
-                });
+                let response;
                 
-                if (response.ok) {
-                    // 캐시 삭제
-                    localStorage.removeItem('stories_' + cafe.name);
-                    alert('작성 완료!');
-                    showPage('map');
+                if (editingReviewId) {
+                    // 수정
+                    response = await fetch(`${API_BASE_URL}/api/reviews/update/${editingReviewId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            rating: selectedRating,
+                            content: review,
+                            images: selectedImages.filter(img => img.startsWith('data:'))
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        alert('수정 완료!');
+                        editingReviewId = null;
+                        localStorage.removeItem('stories_' + cafe.name);
+                        showPage('map');
+                    } else {
+                        alert('수정 실패');
+                    }
                 } else {
-                    alert('작성 실패');
+                    // 새 작성
+                    response = await fetch(`${API_BASE_URL}/api/reviews/add`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            cafe_id: cafe.name,
+                            rating: selectedRating,
+                            content: review,
+                            images: selectedImages
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        localStorage.removeItem('stories_' + cafe.name);
+                        alert('작성 완료!');
+                        showPage('map');
+                    } else {
+                        alert('작성 실패');
+                    }
                 }
             } catch (err) {
                 alert('작성 실패: ' + err.message);
