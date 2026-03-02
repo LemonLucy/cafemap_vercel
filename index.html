@@ -2086,7 +2086,7 @@
             }
         }
         
-        function login() {
+        async function login() {
             const id = document.getElementById('loginId').value.trim();
             const pw = document.getElementById('loginPw').value;
             
@@ -2095,17 +2095,25 @@
                 return;
             }
             
-            // 로컬스토리지에서 사용자 정보 가져오기
-            const users = JSON.parse(localStorage.getItem('cagongUsers')) || [];
-            const user = users.find(u => u.id === id && u.password === pw);
-            
-            if (user) {
-                currentUser = { id: user.id, name: user.name };
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                alert('로그인 성공!');
-                loadMyPage();
-            } else {
-                alert('아이디 또는 비밀번호가 일치하지 않습니다.');
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: id, password: pw })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('token', data.token);
+                    currentUser = { id: data.user.user_id, name: data.user.nickname, email: data.user.email };
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    alert('로그인 성공!');
+                    loadMyPage();
+                } else {
+                    alert('아이디 또는 비밀번호가 일치하지 않습니다.');
+                }
+            } catch (err) {
+                alert('로그인 실패: ' + err.message);
             }
         }
         
@@ -2135,7 +2143,7 @@
             `;
         }
         
-        function signup() {
+        async function signup() {
             const id = document.getElementById('signupId').value.trim();
             const pw = document.getElementById('signupPw').value;
             const pwConfirm = document.getElementById('signupPwConfirm').value;
@@ -2158,18 +2166,28 @@
                 return;
             }
             
-            // 중복 확인
-            const users = JSON.parse(localStorage.getItem('cagongUsers')) || [];
-            if (users.find(u => u.id === id)) {
-                alert('이미 사용 중인 아이디입니다.');
-                return;
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: id, password: pw, nickname: name })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('token', data.token);
+                    currentUser = { id: data.user.user_id, name: data.user.nickname, email: data.user.email };
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    alert('회원가입 성공!');
+                    loadMyPage();
+                } else {
+                    const error = await response.json();
+                    alert('회원가입 실패: ' + (error.error || '알 수 없는 오류'));
+                }
+            } catch (err) {
+                alert('회원가입 실패: ' + err.message);
             }
-            if (users.find(u => u.name === name)) {
-                alert('이미 사용 중인 닉네임입니다.');
-                return;
-            }
-            
-            // 사용자 추가
+        }
             users.push({ id, password: pw, name });
             localStorage.setItem('cagongUsers', JSON.stringify(users));
             
