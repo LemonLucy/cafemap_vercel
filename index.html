@@ -1882,7 +1882,7 @@
             // API로 전송
             try {
                 const imageData = selectedImages.length > 0 ? selectedImages[0] : null;
-                const response = await fetch('/api/reviews', {
+                const response = await fetch('/api/add-review', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
