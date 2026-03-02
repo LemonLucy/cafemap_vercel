@@ -1406,8 +1406,7 @@
                         '</div>';
                     
                     if (story.image_url) {
-                        const imgPath = story.image_url.replace('/uploads/', '');
-                        html += '<div style="margin-bottom:8px;"><img src="/api/image?path=' + imgPath + '" style="max-width:100%;border-radius:6px;"></div>';
+                        html += '<div style="margin-bottom:8px;"><img src="' + story.image_url + '" style="max-width:100%;border-radius:6px;"></div>';
                     }
                     
                     html += '<div style="font-size:13px;color:#333;line-height:1.5;margin-bottom:6px;">' + story.review_text + '</div>' +
