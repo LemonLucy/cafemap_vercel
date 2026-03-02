@@ -1545,7 +1545,7 @@
         async function loadIndicators(cafe, idx, retryCount = 0) {
             try {
                 // localStorage 캐시 확인 (버전 포함)
-                const CACHE_VERSION = 'v20';  // OCI 이미지 URL 적용
+                const CACHE_VERSION = 'v19';  // 이전 캐시 사용
                 const cacheKey = `cafe_${CACHE_VERSION}_${cafe.name}_${cafe.address}`;
                 const cached = localStorage.getItem(cacheKey);
                 
