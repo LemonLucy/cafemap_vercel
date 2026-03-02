@@ -1919,8 +1919,9 @@
                     });
                     userLat = position.coords.latitude;
                     userLng = position.coords.longitude;
+                    console.log('User location:', userLat, userLng);
                 } catch (err) {
-                    console.log('위치 조회 실패, 서울 지역 표시');
+                    console.log('위치 조회 실패, 서울 지역 표시', err);
                 }
             }
             
@@ -1943,15 +1944,19 @@
                 cafe.totalScore > 0
             );
             
+            console.log('Cafes with images:', filtered.length);
+            
             if (userLat && userLng) {
                 // 2km 내 카페 필터링
                 filtered = filtered.filter(cafe => {
                     const dist = getDistance(userLat, userLng, cafe.lat, cafe.lng);
                     return dist <= 2;
                 });
+                console.log('Cafes within 2km:', filtered.length);
             } else {
                 // 서울 지역만
                 filtered = filtered.filter(cafe => cafe.address && cafe.address.includes('서울'));
+                console.log('Seoul cafes:', filtered.length);
             }
             
             const sorted = filtered.sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0)).slice(0, 10);
