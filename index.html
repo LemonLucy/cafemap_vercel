@@ -1502,6 +1502,8 @@
             selectedRating = review.rating;
             selectedImages = review.image_url ? review.image_url.split(',').map(url => url.trim()) : [];
             
+            console.log('Edit mode: existing images:', selectedImages.length, selectedImages);
+            
             // 포스팅 페이지로 이동
             showPage('post');
             
