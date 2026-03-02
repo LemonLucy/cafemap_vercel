@@ -2017,7 +2017,7 @@
         }
         
         // 마이페이지 로드
-        function loadMyPage() {
+        async function loadMyPage() {
             if (!currentUser) {
                 document.getElementById('myPageContent').innerHTML = `
                     <div style="text-align:center;padding:40px 20px;">
@@ -2055,25 +2055,42 @@
                     </div>
                 `;
             } else {
-                const myPosts = posts.filter(p => p.author === currentUser.name);
+                // 내 리뷰 가져오기
+                const token = localStorage.getItem('token');
+                let myReviews = [];
+                
+                if (token) {
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/api/reviews/user/${currentUser.id}`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        if (response.ok) {
+                            myReviews = await response.json();
+                        }
+                    } catch (err) {
+                        console.error('리뷰 로드 실패:', err);
+                    }
+                }
+                
                 document.getElementById('myPageContent').innerHTML = `
                     <div style="text-align:center;padding:20px;background:#f5f5f5;border-radius:8px;margin-bottom:20px;">
                         <div style="font-size:48px;margin-bottom:10px;">👤</div>
                         <div style="font-size:18px;font-weight:600;margin-bottom:5px;">${currentUser.name}</div>
-                        <div style="font-size:14px;color:#666;">작성한 Story: ${myPosts.length}개</div>
+                        <div style="font-size:14px;color:#666;">작성한 리뷰: ${myReviews.length}개</div>
                         <button onclick="logout()" style="margin-top:15px;padding:8px 20px;background:#fff;border:1px solid #ddd;border-radius:4px;cursor:pointer;">로그아웃</button>
                     </div>
-                    <h3 style="margin-bottom:15px;">내가 작성한 Story</h3>
-                    ${myPosts.map(p => `
+                    <h3 style="margin-bottom:15px;">내가 작성한 리뷰</h3>
+                    ${myReviews.map(r => `
                         <div style="border:1px solid #ddd;border-radius:8px;padding:15px;margin-bottom:15px;">
                             <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
-                                <div style="font-weight:600;">${p.cafe}</div>
-                                <div>${'⭐'.repeat(p.rating)}</div>
+                                <div style="font-weight:600;">${r.cafe_name}</div>
+                                <div>${'⭐'.repeat(r.rating)}</div>
                             </div>
-                            <div style="font-size:14px;color:#333;margin-bottom:8px;">${p.review}</div>
-                            <div style="font-size:12px;color:#999;">${p.date}</div>
+                            <div style="font-size:14px;color:#333;margin-bottom:8px;white-space:pre-wrap;">${r.content || r.review_text}</div>
+                            ${r.image_url ? `<img src="http://138.2.127.70:8000${r.image_url}" style="width:100%;max-width:300px;border-radius:4px;margin-top:10px;">` : ''}
+                            <div style="font-size:12px;color:#999;margin-top:8px;">${new Date(r.created_at).toLocaleDateString()}</div>
                         </div>
-                    `).join('') || '<p style="text-align:center;color:#999;padding:20px 0;">아직 작성한 Story가 없습니다.</p>'}
+                    `).join('') || '<p style="text-align:center;color:#999;padding:20px 0;">아직 작성한 리뷰가 없습니다.</p>'}
                 `;
             }
         }
