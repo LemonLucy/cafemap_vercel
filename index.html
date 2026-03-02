@@ -1487,14 +1487,16 @@
             
             const images = review.image_url ? review.image_url.split(',').slice(0, 5) : [];
             const content = (review.content || review.review_text || '').replace(/\n/g, '<br>');
+            const stars = '<span style="color:#c9b8a3;">' + '★'.repeat(review.rating) + '</span>' + 
+                         '<span style="color:#e0e0e0;">' + '★'.repeat(5 - review.rating) + '</span>';
             
             let html = '<div style="padding:20px;max-height:90vh;overflow-y:auto;">';
-            html += '<button onclick="document.getElementById(\'reviewDetailModal\').style.display=\'none\'" style="float:right;background:none;border:none;font-size:28px;cursor:pointer;line-height:1;">&times;</button>';
+            html += '<button onclick="document.getElementById(\'reviewDetailModal\').style.display=\'none\'" style="float:right;background:none;border:none;font-size:28px;cursor:pointer;line-height:1;color:#999;">&times;</button>';
             html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;clear:both;">';
-            html += '<h2 onclick="findAndShowCafe(\'' + review.cafe_name.replace(/'/g, "\\'") + '\')" style="margin:0;font-size:20px;color:#000;cursor:pointer;text-decoration:underline;">' + review.cafe_name + '</h2>';
-            html += '<span style="font-size:14px;color:#999;">' + (review.nickname || review.username || '익명') + '</span>';
+            html += '<h2 onclick="findAndShowCafe(\'' + review.cafe_name.replace(/'/g, "\\'") + '\')" style="margin:0;font-size:20px;color:#5d4e37;cursor:pointer;text-decoration:underline;">' + review.cafe_name + '</h2>';
+            html += '<span style="font-size:14px;color:#8b7355;">' + (review.nickname || review.username || '익명') + '</span>';
             html += '</div>';
-            html += '<div style="margin-bottom:15px;font-size:18px;">' + '⭐'.repeat(review.rating) + '</div>';
+            html += '<div style="margin-bottom:15px;font-size:20px;">' + stars + '</div>';
             
             if (images.length > 0) {
                 html += '<div style="display:flex;gap:10px;overflow-x:auto;margin-bottom:15px;padding-bottom:10px;">';
@@ -1504,7 +1506,7 @@
                 html += '</div>';
             }
             
-            html += '<div style="font-size:15px;line-height:1.8;">' + content + '</div>';
+            html += '<div style="font-size:15px;line-height:1.8;color:#333;">' + content + '</div>';
             html += '<div style="font-size:12px;color:#999;margin-top:15px;">' + new Date(review.created_at).toLocaleDateString() + '</div>';
             html += '</div>';
             
