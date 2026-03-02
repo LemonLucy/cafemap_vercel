@@ -1452,9 +1452,9 @@
             html += '<div style="margin-bottom:15px;font-size:18px;">' + '⭐'.repeat(review.rating) + '</div>';
             
             if (images.length > 0) {
-                html += '<div style="margin-bottom:15px;max-height:400px;overflow-y:auto;">';
+                html += '<div style="display:flex;gap:10px;overflow-x:auto;margin-bottom:15px;padding-bottom:10px;">';
                 images.forEach(img => {
-                    html += '<img src="' + img.trim() + '" style="width:100%;max-width:400px;border-radius:8px;margin-bottom:10px;">';
+                    html += '<img src="' + img.trim() + '" style="max-height:300px;border-radius:8px;flex-shrink:0;">';
                 });
                 html += '</div>';
             }
