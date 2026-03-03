@@ -1,12 +1,15 @@
 {
+  "id": "/",
   "name": "카공맵 - 작업하기 좋은 카페 찾기",
   "short_name": "카공맵",
-  "description": "네이버 블로그 분석 기반 카공 최적화 카페 검색 서비스",
+  "description": "네이버 블로그 분석 기반 카공 최적화 카페 검색 서비스. 콘센트, 와이파이, 작업 환경을 고려한 카페 추천",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4CAF50",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
+  "categories": ["productivity", "lifestyle", "food"],
   "icons": [
     {
       "src": "/icon-192.png",
@@ -25,6 +28,35 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/home.png",
+      "sizes": "1170x2532",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "내 주변 카페",
+      "short_name": "주변 카페",
+      "description": "현재 위치 주변 카페 검색",
+      "url": "/?action=nearby",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "카공 추천",
+      "short_name": "카공",
+      "description": "작업하기 좋은 카페 추천",
+      "url": "/?filter=work",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
