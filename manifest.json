@@ -9,6 +9,8 @@
   "background_color": "#ffffff",
   "theme_color": "#4CAF50",
   "orientation": "portrait-primary",
+  "lang": "ko",
+  "dir": "ltr",
   "categories": ["productivity", "lifestyle", "food"],
   "icons": [
     {
@@ -40,7 +42,15 @@
       "src": "/home.png",
       "sizes": "1170x2532",
       "type": "image/png",
-      "form_factor": "narrow"
+      "form_factor": "narrow",
+      "label": "카공맵 메인 화면"
+    },
+    {
+      "src": "/cagong1.png",
+      "sizes": "1170x2532",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "카페 검색 결과"
     }
   ],
   "shortcuts": [
@@ -58,5 +68,16 @@
       "url": "/?filter=work",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
-  ]
+  ],
+  "share_target": {
+    "action": "/",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "display_override": ["window-controls-overlay", "standalone"]
 }
